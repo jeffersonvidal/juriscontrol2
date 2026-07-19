@@ -8,6 +8,9 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
+     *
+     * Migration PADRÃO do Laravel.
+     * NÃO adicionar company_id aqui — será feito em migration separada.
      */
     public function up(): void
     {

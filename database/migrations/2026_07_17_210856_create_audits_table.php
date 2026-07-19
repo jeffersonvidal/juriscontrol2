@@ -4,23 +4,24 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+/**
+ * Migration: create_audits_table
+ * --------------------------------------------------------
+ * Migration PADRÃO do laravel-auditing (vendor).
+ * NÃO deve conter company_id aqui — será adicionado
+ * pela migration separada: add_company_id_to_audits_table.
+ *
+ * IMPORTANTE: Esta migration roda ANTES de create_companies_table,
+ * então NÃO pode ter FK para companies.
+ */
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        $connection = config('audit.drivers.database.connection', config('database.default'));
-        $table = config('audit.drivers.database.table', 'audits');
-
-        Schema::connection($connection)->create($table, function (Blueprint $table) {
-
-            $morphPrefix = config('audit.user.morph_prefix', 'user');
-
+        Schema::create('audits', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string($morphPrefix . '_type')->nullable();
-            $table->unsignedBigInteger($morphPrefix . '_id')->nullable();
+            $table->string('user_type')->nullable();
+            $table->unsignedBigInteger('user_id')->nullable();
             $table->string('event');
             $table->morphs('auditable');
             $table->text('old_values')->nullable();
@@ -31,18 +32,12 @@ return new class extends Migration
             $table->string('tags')->nullable();
             $table->timestamps();
 
-            $table->index([$morphPrefix . '_id', $morphPrefix . '_type']);
+            $table->index(['user_id', 'user_type']);
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        $connection = config('audit.drivers.database.connection', config('database.default'));
-        $table = config('audit.drivers.database.table', 'audits');
-
-        Schema::connection($connection)->drop($table);
+        Schema::drop('audits');
     }
 };

@@ -2,48 +2,59 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Database\Factories\UserFactory;
+use App\Modules\Core\Traits\HasCompany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Spatie\Permission\Traits\HasRoles;
+use App\Modules\Rbac\Traits\HasPermissionsHelper;
 
+/**
+ * User
+ * --------------------------------------------------------
+ * Model de usuário com multi-tenancy e RBAC.
+ * Usa HasCompany para isolamento por empresa.
+ * Usa HasRoles (spatie/laravel-permission) para permissões.
+ */
 class User extends Authenticatable
 {
-    /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasRoles, HasCompany, HasPermissionsHelper;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
     protected $fillable = [
         'name',
         'email',
         'password',
+        'company_id',   // Vínculo multi-tenant
+        'status',       // Ativo/Inativo
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    /**
+     * Relacionamento: usuário pertence a uma empresa.
+     */
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class);
+    }
+
+    /**
+     * Verifica se é super-admin (acesso cross-tenant).
+     */
+    public function isSuperAdmin(): bool
+    {
+        return empty($this->company_id) && $this->hasRole('super-admin');
     }
 }
