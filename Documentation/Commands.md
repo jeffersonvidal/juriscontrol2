@@ -85,6 +85,11 @@ http://localhost:8000
 
 # Criação de arquivos
 
+Limpar Banco de Dados
+```
+php artisan db:wipe
+```
+
 Criar migration
 ```
 php artisan make:migration create_users_table

@@ -10,8 +10,8 @@ use Symfony\Component\HttpFoundation\Response;
  * Middleware EnsureTenant
  * --------------------------------------------------------
  * Garante que o usuário autenticado pertence a uma empresa válida.
- * Bloqueia acesso se o usuário estiver sem company_id (exceto super-admin).
- * Regra do playbook: "NUNCA permitir acesso a registros de outra empresa".
+ * 
+ * CORREÇÃO: Verifica 'is_active' (boolean) ao invés de 'status' (enum).
  */
 class EnsureTenant
 {
@@ -29,8 +29,8 @@ class EnsureTenant
             return $next($request);
         }
 
-        // Verifica se a empresa do usuário ainda existe e está ativa
-        if (! $user->company || $user->company->status !== 'active') {
+        // CORREÇÃO: Verifica 'is_active' (boolean) ao invés de 'status' (enum)
+        if (! $user->company || ! $user->company->is_active) {
             auth()->logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();

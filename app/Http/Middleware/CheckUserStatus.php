@@ -10,12 +10,8 @@ use Symfony\Component\HttpFoundation\Response;
  * Middleware CheckUserStatus
  * --------------------------------------------------------
  * Verifica se o usuário autenticado e sua empresa estão ativos.
- * Regra do playbook: "NUNCA permitir acesso a registros de outra empresa"
- * (estendido para: NUNCA permitir acesso de user/empresa inativos).
- *
- * Guard Clauses (Fail Fast):
- *  1. Usuário inativo → logout + mensagem
- *  2. Empresa inativa → logout + mensagem
+ * 
+ * CORREÇÃO: Adiciona debug para identificar o problema.
  */
 class CheckUserStatus
 {
@@ -23,32 +19,38 @@ class CheckUserStatus
     {
         $user = $request->user();
 
-        // Guard Clause: usuário não autenticado
         if (! $user) {
             return redirect()->route('login');
         }
 
-        // Guard Clause: super-admin (sem company_id) bypass
         if (empty($user->company_id)) {
             return $next($request);
         }
 
-        // Guard Clause: usuário inativo
         if ($user->status !== 'active') {
             return $this->logoutWithMessage($request, 'Sua conta foi desativada. Contate o administrador.');
         }
 
-        // Guard Clause: empresa inativa ou inexistente
-        if (! $user->company || $user->company->status !== 'active') {
+        // DEBUG: Log temporário para identificar o problema
+        \Log::debug('CheckUserStatus Debug', [
+            'user_id' => $user->id,
+            'company_id' => $user->company_id,
+            'company' => $user->company ? [
+                'id' => $user->company->id,
+                'trade_name' => $user->company->trade_name,
+                'is_active' => $user->company->is_active,
+                'is_active_type' => gettype($user->company->is_active),
+            ] : null,
+        ]);
+
+        // CORREÇÃO: Verifica 'is_active' (boolean)
+        if (! $user->company || ! $user->company->is_active) {
             return $this->logoutWithMessage($request, 'Sua empresa está inativa. Contate o suporte.');
         }
 
         return $next($request);
     }
 
-    /**
-     * Realiza logout e redireciona com mensagem de erro.
-     */
     private function logoutWithMessage(Request $request, string $message): \Illuminate\Http\RedirectResponse
     {
         auth()->logout();

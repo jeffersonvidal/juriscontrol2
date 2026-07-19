@@ -3,10 +3,6 @@
 use App\Http\Controllers\Auth\AuthController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
-
 /*
 |--------------------------------------------------------------------------
 | Rotas Públicas (visitantes)
@@ -22,10 +18,6 @@ Route::middleware('guest')->group(function () {
 |--------------------------------------------------------------------------
 | Rotas Protegidas (autenticadas + tenant + status)
 |--------------------------------------------------------------------------
-| Ordem dos middlewares:
-|  1. auth         → exige usuário logado
-|  2. check.status → valida user ativo + empresa ativa
-|  3. tenant       → garante isolamento multi-tenant
 */
 Route::middleware(['auth', 'check.status', 'tenant'])->group(function () {
 
@@ -37,5 +29,15 @@ Route::middleware(['auth', 'check.status', 'tenant'])->group(function () {
     // Logout
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-    // Futuros módulos serão adicionados aqui
+    // ============================================================
+    // Módulo Companies
+    // ============================================================
+    Route::prefix('companies')->name('companies.')->group(function () {
+        Route::get('/', [\App\Modules\Companies\Http\Controllers\CompanyController::class, 'index'])->name('index');
+        Route::get('/list', [\App\Modules\Companies\Http\Controllers\CompanyController::class, 'getList'])->name('list');
+        Route::post('/', [\App\Modules\Companies\Http\Controllers\CompanyController::class, 'store'])->name('store');
+        Route::get('/{company}/edit', [\App\Modules\Companies\Http\Controllers\CompanyController::class, 'edit'])->name('edit');
+        Route::put('/{company}', [\App\Modules\Companies\Http\Controllers\CompanyController::class, 'update'])->name('update');
+        Route::delete('/{company}', [\App\Modules\Companies\Http\Controllers\CompanyController::class, 'destroy'])->name('destroy');
+    });
 });

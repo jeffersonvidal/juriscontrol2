@@ -13,14 +13,17 @@ use Illuminate\Support\Facades\Hash;
  * --------------------------------------------------------
  * Cria um usuário admin para a empresa de teste.
  * Credenciais: admin@escritorio.com / ChangeMe@123
+ * 
+ * CORREÇÃO: usa 'cnpj_cpf' ao invés de 'document' (novo schema).
  */
 class AdminUserSeeder extends Seeder
 {
     public function run(): void
     {
         // Busca a empresa criada pelo CompanySeeder
+        // CORREÇÃO: campo 'cnpj_cpf' ao invés de 'document'
         $company = Company::withoutGlobalScopes()
-                          ->where('document', '12.345.678/0001-90')
+                          ->where('cnpj_cpf', '12.345.678/0001-90')
                           ->first();
 
         if (! $company) {
@@ -44,6 +47,9 @@ class AdminUserSeeder extends Seeder
 
         // Atribui o role admin (acesso total dentro do tenant)
         $admin->assignRole(Role::ADMIN->value);
+
+        // Atualiza o user_id da empresa para apontar para o admin recém-criado
+        $company->update(['user_id' => $admin->id]);
 
         $this->command->info('✅ Usuário admin criado:');
         $this->command->line("   E-mail: {$admin->email}");

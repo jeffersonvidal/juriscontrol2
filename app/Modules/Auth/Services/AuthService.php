@@ -11,27 +11,18 @@ use Illuminate\Support\Facades\Hash;
  * --------------------------------------------------------
  * Camada de negócio do login.
  * Regra do playbook: "Controller NUNCA contém regras de negócio".
- *
- * Princípios:
- *  - Single Responsibility (apenas autenticação)
- *  - Guard Clauses (Fail Fast)
- *  - Retorna resultados tipados (array com status + mensagem)
+ * 
+ * CORREÇÃO: verifica 'is_active' (boolean) ao invés de 'status' (enum).
  */
 class AuthService
 {
     /**
      * Autentica o usuário.
-     *
-     * @param  string $email    E-mail informado
-     * @param  string $password Senha informada
-     * @return array            ['success' => bool, 'message' => string, 'redirect' => string|null]
      */
     public function login(string $email, string $password): array
     {
         // ============================================================
         // Guard Clause 1: buscar usuário por e-mail
-        // Usamos withoutGlobalScopes() para não aplicar CompanyScope
-        // (o usuário ainda não está autenticado, então não há company_id)
         // ============================================================
         $user = User::withoutGlobalScopes()->where('email', $email)->first();
 
@@ -67,8 +58,8 @@ class AuthService
         }
 
         // ============================================================
-        // Guard Clause 5: empresa inativa (apenas se o usuário tem tenant)
-        // Super-admin (company_id null) não precisa dessa validação
+        // Guard Clause 5: empresa inativa
+        // CORREÇÃO: verifica 'is_active' (boolean) ao invés de 'status' (enum)
         // ============================================================
         if (! empty($user->company_id)) {
             $company = $user->company;
@@ -81,7 +72,8 @@ class AuthService
                 ];
             }
 
-            if ($company->status !== 'active') {
+            // CORREÇÃO: campo 'is_active' (boolean) ao invés de 'status' (enum)
+            if (! $company->is_active) {
                 return [
                     'success'  => false,
                     'message'  => 'Sua empresa está inativa. Contate o suporte.',
