@@ -11,9 +11,12 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        // Alias do middleware multi-tenant (regra do playbook)
+        // ============================================================
+        // ALIAS de middlewares customizados
+        // ============================================================
         $middleware->alias([
-            'tenant' => \App\Modules\Core\Middleware\EnsureTenant::class,
+            'tenant'       => \App\Modules\Core\Middleware\EnsureTenant::class,
+            'check.status' => \App\Http\Middleware\CheckUserStatus::class,
         ]);
 
         // Aplica o middleware tenant em todas as rotas web autenticadas

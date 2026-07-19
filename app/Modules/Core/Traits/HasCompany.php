@@ -6,22 +6,16 @@ use App\Modules\Core\Scopes\CompanyScope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Trait HasCompany
  * --------------------------------------------------------
- * Deve ser usada em TODOS os models do sistema.
- * Garante isolamento multi-tenant automático em todas as queries.
- * Regra do playbook: "TODO model tem company_id" e
- * "TODO query usa CompanyScope automaticamente".
+ * Deve ser usada em TODOS os models do sistema (exceto Company).
+ * Garante isolamento multi-tenant automático e preenchimento do company_id.
  */
 trait HasCompany
 {
-    /**
-     * Boot da trait: registra o CompanyScope global.
-     * Toda query feita no model será automaticamente filtrada
-     * pelo company_id do usuário autenticado.
-     */
     protected static function bootHasCompany(): void
     {
         // Adiciona o scope global ANTES de qualquer query
@@ -30,8 +24,17 @@ trait HasCompany
         // Hook: antes de criar, injeta o company_id automaticamente
         static::creating(function (Model $model): void {
             // Guard Clause: só preenche se ainda não estiver definido
-            if (empty($model->company_id) && auth()->check()) {
-                $model->company_id = auth()->user()->company_id;
+            if (empty($model->company_id)) {
+                // Lê da sessão para evitar loop infinito
+                $guard = app('auth')->getDefaultDriver();
+                $userId = session($guard);
+                
+                if ($userId) {
+                    $companyId = DB::table('users')->where('id', $userId)->value('company_id');
+                    if (! empty($companyId)) {
+                        $model->company_id = $companyId;
+                    }
+                }
             }
         });
     }
@@ -45,8 +48,7 @@ trait HasCompany
     }
 
     /**
-     * Scope auxiliar para buscar SEM o filtro de tenant
-     * (uso restrito a super-admin / contexto system).
+     * Scope auxiliar para buscar SEM o filtro de tenant.
      */
     public function scopeWithoutCompanyScope(Builder $query): Builder
     {
