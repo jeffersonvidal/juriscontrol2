@@ -67,7 +67,7 @@
         <footer class="text-center text-muted small mt-4">
             <p class="mb-0">
                 <i data-lucide="scale" class="icon-xs me-1"></i>
-                JurisControl &copy; {{ date('Y') }} — ERP Jurídico
+                JurisControl &copy; 2024 - {{ date('Y') }} — ERP Jurídico
             </p>
         </footer>
     </div>
