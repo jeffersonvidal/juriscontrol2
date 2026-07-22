@@ -35,6 +35,7 @@ Route::middleware(['auth', 'check.status', 'tenant'])->group(function () {
     Route::prefix('companies')->name('companies.')->group(function () {
         Route::get('/', [\App\Modules\Companies\Http\Controllers\CompanyController::class, 'index'])->name('index');
         Route::get('/list', [\App\Modules\Companies\Http\Controllers\CompanyController::class, 'getList'])->name('list');
+        Route::get('/{company}', [\App\Modules\Companies\Http\Controllers\CompanyController::class, 'show'])->name('show'); // <-- ADICIONADO
         Route::post('/', [\App\Modules\Companies\Http\Controllers\CompanyController::class, 'store'])->name('store');
         Route::get('/{company}/edit', [\App\Modules\Companies\Http\Controllers\CompanyController::class, 'edit'])->name('edit');
         Route::put('/{company}', [\App\Modules\Companies\Http\Controllers\CompanyController::class, 'update'])->name('update');

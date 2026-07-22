@@ -14,26 +14,36 @@
     </td>
     <td class="text-end pe-4">
         <div class="dropdown">
-            <button class="btn btn-sm btn-link text-muted-custom p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <button class="btn btn-sm btn-actions" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Ações">
                 <i data-lucide="more-vertical" class="icon-sm"></i>
             </button>
-            <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+            <ul class="dropdown-menu dropdown-menu-end" data-bs-boundary="viewport">
+                @can('companies.view')
+                <li>
+                    <button class="dropdown-item btn-view-company" data-id="{{ $company->id }}">
+                        <i data-lucide="eye" class="icon-xs"></i>
+                        <span>Visualizar</span>
+                    </button>
+                </li>
+                @endcan
                 @can('companies.update')
                 <li>
-                    <button class="dropdown-item d-flex align-items-center gap-2" 
+                    <button class="dropdown-item" 
                             data-bs-toggle="modal" 
                             data-bs-target="#companyModal" 
                             data-action="edit" 
                             data-id="{{ $company->id }}">
-                        <i data-lucide="pencil" class="icon-xs"></i> Editar
+                        <i data-lucide="pencil" class="icon-xs"></i>
+                        <span>Editar</span>
                     </button>
                 </li>
                 @endcan
                 @can('companies.delete')
                 <li><hr class="dropdown-divider"></li>
                 <li>
-                    <button class="dropdown-item d-flex align-items-center gap-2 text-danger btn-delete" data-id="{{ $company->id }}">
-                        <i data-lucide="trash-2" class="icon-xs"></i> Excluir
+                    <button class="dropdown-item text-danger btn-delete" data-id="{{ $company->id }}">
+                        <i data-lucide="trash-2" class="icon-xs"></i>
+                        <span>Excluir</span>
                     </button>
                 </li>
                 @endcan

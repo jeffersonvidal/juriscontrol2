@@ -7,6 +7,7 @@ use App\Models\Company;
 use App\Modules\Companies\Http\Requests\StoreCompanyRequest;
 use App\Modules\Companies\Http\Requests\UpdateCompanyRequest;
 use App\Modules\Companies\Services\CompanyService;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests; // <-- ADICIONADO: Trait de autorização
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -21,6 +22,9 @@ use Illuminate\Http\Request;
  */
 class CompanyController extends Controller
 {
+    // <-- ADICIONADO: Garante que o método $this->authorize() esteja disponível
+    use AuthorizesRequests;
+
     public function __construct(
         private CompanyService $service
     ) {}
@@ -30,6 +34,7 @@ class CompanyController extends Controller
      */
     public function index(Request $request)
     {
+        // Verifica a policy 'viewAny' para o model Company
         $this->authorize('viewAny', Company::class);
         return view('modules.companies.index');
     }
@@ -54,10 +59,27 @@ class CompanyController extends Controller
     }
 
     /**
+ * Exibe dados completos de uma empresa para visualização (AJAX).
+ */
+public function show(Company $company): JsonResponse
+{
+    $this->authorize('view', $company);
+
+    $company->load(['addresses', 'responsible']);
+
+    return response()->json([
+        'success' => true,
+        'data'    => $company,
+    ]);
+}
+
+    /**
      * Armazena nova empresa com endereços (AJAX).
      */
     public function store(StoreCompanyRequest $request): JsonResponse
     {
+        // A autorização também é verificada dentro do FormRequest, 
+        // mas manter aqui reforça a segurança a nível de controller.
         $this->authorize('create', Company::class);
 
         $company = $this->service->store($request->validated());

@@ -59,75 +59,87 @@
 
 {{-- Modal de Cadastro/Edição --}}
 <div class="modal fade" id="companyModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
-        <div class="modal-content bg-surface border-jc">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content" style="max-height: 90vh;">
             <form id="companyForm" novalidate>
                 @csrf
                 <input type="hidden" id="companyId" name="id">
                 
+                {{-- Header --}}
                 <div class="modal-header border-bottom border-jc">
                     <h5 class="modal-title fw-semibold" id="modalTitle">Nova Empresa</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 
-                <div class="modal-body p-4">
+                {{-- Body com Scroll --}}
+                <div class="modal-body p-4" style="max-height: calc(90vh - 140px); overflow-y: auto;">
                     {{-- Seção: Dados da Empresa --}}
                     <h6 class="fw-semibold mb-3 d-flex align-items-center gap-2">
-                        <i data-lucide="building-2" class="icon-sm text-primary"></i>
+                        <i data-lucide="building-2" class="icon-sm" style="color: var(--jc-primary);"></i>
                         Dados da Empresa
                     </h6>
                     <div class="row g-3 mb-4">
                         <div class="col-md-6">
                             <label class="form-label-jc">Nome Fantasia <span class="text-danger">*</span></label>
-                            <input type="text" name="trade_name" id="fieldTradeName" class="form-control form-control-jc" required>
+                            <input type="text" name="trade_name" id="fieldTradeName" 
+                                   class="form-control form-control-jc" required>
                             <div class="invalid-feedback"></div>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label-jc">Razão Social <span class="text-danger">*</span></label>
-                            <input type="text" name="corporate_reason" id="fieldCorporateReason" class="form-control form-control-jc" required>
+                            <input type="text" name="corporate_reason" id="fieldCorporateReason" 
+                                   class="form-control form-control-jc" required>
                             <div class="invalid-feedback"></div>
                         </div>
                         <div class="col-md-4">
                             <label class="form-label-jc">CNPJ/CPF <span class="text-danger">*</span></label>
-                            <input type="text" name="cnpj_cpf" id="fieldCnpjCpf" class="form-control form-control-jc" required placeholder="00.000.000/0000-00">
+                            <input type="text" name="cnpj_cpf" id="fieldCnpjCpf" 
+                                   class="form-control form-control-jc" required 
+                                   placeholder="00.000.000/0000-00">
                             <div class="invalid-feedback"></div>
                         </div>
                         <div class="col-md-4">
                             <label class="form-label-jc">E-mail <span class="text-danger">*</span></label>
-                            <input type="email" name="email" id="fieldEmail" class="form-control form-control-jc" required>
+                            <input type="email" name="email" id="fieldEmail" 
+                                   class="form-control form-control-jc" required>
                             <div class="invalid-feedback"></div>
                         </div>
                         <div class="col-md-4">
                             <label class="form-label-jc">Telefone</label>
-                            <input type="text" name="phone" id="fieldPhone" class="form-control form-control-jc" placeholder="(00) 00000-0000">
+                            <input type="text" name="phone" id="fieldPhone" 
+                                   class="form-control form-control-jc" placeholder="(00) 00000-0000">
                         </div>
                         <div class="col-md-12">
                             <label class="form-label-jc">Status <span class="text-danger">*</span></label>
                             <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" name="is_active" id="fieldIsActive" value="1" checked>
+                                <input class="form-check-input" type="checkbox" 
+                                       name="is_active" id="fieldIsActive" value="1" checked>
                                 <label class="form-check-label" for="fieldIsActive">Ativo</label>
                             </div>
                         </div>
                     </div>
 
                     {{-- Seção: Endereços --}}
-                    <h6 class="fw-semibold mb-3 d-flex align-items-center gap-2">
-                        <i data-lucide="map-pin" class="icon-sm text-primary"></i>
-                        Endereços
-                        <button type="button" class="btn btn-sm btn-jc-outline ms-auto" id="btnAddAddress">
-                            <i data-lucide="plus" class="icon-xs me-1"></i> Adicionar
-                        </button>
-                    </h6>
-                    <div id="addressesContainer">
-                        {{-- Endereços serão inseridos aqui via JS --}}
-                    </div>
-                    <div id="noAddressesMessage" class="text-center text-muted-custom py-3">
-                        <i data-lucide="map-pin-off" class="icon-md mb-2 d-block mx-auto"></i>
-                        Nenhum endereço cadastrado.
+                    <div class="mb-3">
+                        <h6 class="fw-semibold mb-3 d-flex align-items-center gap-2">
+                            <i data-lucide="map-pin" class="icon-sm" style="color: var(--jc-primary);"></i>
+                            Endereços
+                            <button type="button" class="btn btn-sm btn-jc-outline ms-auto" id="btnAddAddress">
+                                <i data-lucide="plus" class="icon-xs me-1"></i> Adicionar
+                            </button>
+                        </h6>
+                        <div id="addressesContainer">
+                            {{-- Endereços serão inseridos aqui via JS --}}
+                        </div>
+                        <div id="noAddressesMessage" class="text-center text-muted-custom py-3">
+                            <i data-lucide="map-pin-off" class="icon-md mb-2 d-block mx-auto"></i>
+                            Nenhum endereço cadastrado.
+                        </div>
                     </div>
                 </div>
                 
-                <div class="modal-footer border-top border-jc">
+                {{-- Footer --}}
+                <div class="modal-footer border-top border-jc bg-surface">
                     <button type="button" class="btn btn-jc-outline" data-bs-dismiss="modal">Cancelar</button>
                     <button type="submit" class="btn btn-jc-primary" id="btnSave">
                         <span class="btn-text">Salvar</span>
@@ -135,6 +147,30 @@
                     </button>
                 </div>
             </form>
+        </div>
+    </div>
+</div>
+
+{{-- ============================================================
+    PAINEL LATERAL DE VISUALIZAÇÃO
+============================================================ --}}
+<div class="view-overlay" id="viewOverlay"></div>
+<div class="view-panel" id="viewPanel">
+    <div class="view-panel-header">
+        <h5 class="d-flex align-items-center gap-2">
+            <i data-lucide="building-2" class="icon-sm" style="color: var(--jc-primary);"></i>
+            <span id="viewPanelTitle">Detalhes da Empresa</span>
+        </h5>
+        <button type="button" class="btn-close-panel" id="btnCloseViewPanel" title="Fechar">
+            <i data-lucide="x" class="icon-sm"></i>
+        </button>
+    </div>
+    <div class="view-panel-body" id="viewPanelBody">
+        {{-- Conteúdo carregado via AJAX --}}
+        <div class="text-center py-5 text-muted-custom">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Carregando...</span>
+            </div>
         </div>
     </div>
 </div>
@@ -152,6 +188,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let filters = { search: '', is_active: '' };
     let isEditing = false;
     let addressCounter = 0;
+    let addressAdded = false; // <-- CONTROLE PARA EVITAR DUPLICAÇÃO
 
     // ============================================================
     // 1. CARREGAR DADOS (AJAX)
@@ -258,13 +295,122 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('addressesContainer').innerHTML = '';
         document.getElementById('noAddressesMessage').style.display = 'block';
         addressCounter = 0;
+        addressAdded = false; // <-- RESETA CONTROLE DE DUPLICAÇÃO
     }
 
     // ============================================================
-    // 4. ENDEREÇOS DINÂMICOS
+    // 4. ENDEREÇOS DINÂMICOS + VIA CEP (CORRIGIDO)
+    // ============================================================
+    
+    /**
+     * Busca endereço via API ViaCEP
+     */
+    function buscarEnderecoViaCEP(cep, index) {
+        cep = cep.replace(/\D/g, '');
+        
+        if (cep.length !== 8) {
+            return;
+        }
+        
+        const streetInput = document.querySelector(`.address-card[data-index="${index}"] .address-street`);
+        if (streetInput) {
+            streetInput.placeholder = 'Buscando...';
+        }
+        
+        fetch(`https://viacep.com.br/ws/${cep}/json/`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.erro) {
+                    toastError('CEP não encontrado. Preencha manualmente.');
+                    return;
+                }
+                
+                const card = document.querySelector(`.address-card[data-index="${index}"]`);
+                if (!card) return;
+                
+                const streetField = card.querySelector('.address-street');
+                if (streetField && data.logradouro) {
+                    streetField.value = data.logradouro;
+                }
+                
+                const complementField = card.querySelector('.address-complement');
+                if (complementField && data.complemento) {
+                    complementField.value = data.complemento;
+                }
+                
+                const districtField = card.querySelector('.address-district');
+                if (districtField && data.bairro) {
+                    districtField.value = data.bairro;
+                }
+                
+                const cityField = card.querySelector('.address-city');
+                if (cityField && data.localidade) {
+                    cityField.value = data.localidade;
+                }
+                
+                const stateField = card.querySelector('.address-state');
+                if (stateField && data.uf) {
+                    stateField.value = data.uf.toUpperCase();
+                }
+                
+                const numberField = card.querySelector('[name="number"]');
+                if (numberField) {
+                    setTimeout(() => numberField.focus(), 100);
+                }
+                
+                if (typeof lucide !== 'undefined') {
+                    lucide.createIcons();
+                }
+            })
+            .catch(error => {
+                console.error('Erro na consulta ViaCEP:', error);
+            })
+            .finally(() => {
+                if (streetInput) {
+                    streetInput.placeholder = '';
+                }
+            });
+    }
+    
+    function formatCEP(value) {
+        return value.replace(/\D/g, '')
+                    .replace(/(\d{5})(\d)/, '$1-$2')
+                    .replace(/(-\d{3})\d+?$/, '$1');
+    }
+    
+    // Evento blur para CEP (delegado)
+    document.addEventListener('blur', function(e) {
+        if (e.target.classList.contains('via-cep')) {
+            const cep = e.target.value;
+            const index = e.target.getAttribute('data-index');
+            
+            e.target.value = formatCEP(cep);
+            
+            if (cep.replace(/\D/g, '').length === 8) {
+                buscarEnderecoViaCEP(cep, index);
+            }
+        }
+    }, true);
+    
+    // Evento input para formatação em tempo real
+    document.addEventListener('input', function(e) {
+        if (e.target.classList.contains('via-cep')) {
+            e.target.value = formatCEP(e.target.value);
+        }
+    }, true);
+    
+    // ============================================================
+    // BOTÃO ADICIONAR ENDEREÇO (CORRIGIDO - EVITA DUPLICAÇÃO)
     // ============================================================
     document.getElementById('btnAddAddress').addEventListener('click', function() {
+        // <-- VERIFICA SE JÁ FOI ADICIONADO UM ENDEREÇO
+        if (addressAdded) {
+            toastError('Já existe um endereço adicionado. Remova o atual antes de adicionar outro.');
+            return;
+        }
+        
         addAddressField();
+        addressAdded = true; // <-- MARCA COMO ADICIONADO
     });
 
     function addAddressField(data = null) {
@@ -272,7 +418,10 @@ document.addEventListener('DOMContentLoaded', function() {
         const wrapper = template.querySelector('.address-card');
         const index = addressCounter++;
         
-        // Atualiza os nomes dos campos com o índice
+        // Adiciona data-index ao card
+        wrapper.setAttribute('data-index', index);
+        
+        // Atualiza os nomes dos campos
         wrapper.querySelectorAll('[name]').forEach(input => {
             const name = input.getAttribute('name');
             input.setAttribute('name', `addresses[${index}][${name}]`);
@@ -282,6 +431,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Preenche com dados se estiver editando
         if (data) {
             wrapper.querySelector('[name="id"]').value = data.id || '';
+            wrapper.querySelector('[name="zip_code"]').value = data.zip_code || '';
             wrapper.querySelector('[name="label"]').value = data.label || '';
             wrapper.querySelector('[name="street"]').value = data.street || '';
             wrapper.querySelector('[name="number"]').value = data.number || '';
@@ -289,14 +439,12 @@ document.addEventListener('DOMContentLoaded', function() {
             wrapper.querySelector('[name="district"]').value = data.district || '';
             wrapper.querySelector('[name="city"]').value = data.city || '';
             wrapper.querySelector('[name="state"]').value = data.state || '';
-            wrapper.querySelector('[name="zip_code"]').value = data.zip_code || '';
             wrapper.querySelector('[name="country"]').value = data.country || 'Brasil';
             wrapper.querySelector('[name="is_default"]').checked = data.is_default || false;
         }
         
         // Evento de remover endereço
         wrapper.querySelector('.btn-remove-address').addEventListener('click', function() {
-            // Se tem ID, marca para exclusão
             const idInput = wrapper.querySelector('[name="id"]');
             if (idInput && idInput.value) {
                 const destroyInput = document.createElement('input');
@@ -306,9 +454,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 wrapper.appendChild(destroyInput);
                 wrapper.style.opacity = '0.5';
                 wrapper.querySelector('.btn-remove-address').disabled = true;
+                wrapper.querySelector('.btn-remove-address').innerHTML = '<i data-lucide="check" class="icon-xs"></i>';
+                if (typeof lucide !== 'undefined') lucide.createIcons();
             } else {
                 wrapper.remove();
                 updateNoAddressesMessage();
+                addressAdded = false; // <-- PERMITE ADICIONAR NOVAMENTE
             }
         });
         
@@ -316,6 +467,11 @@ document.addEventListener('DOMContentLoaded', function() {
         updateNoAddressesMessage();
         
         if (typeof lucide !== 'undefined') lucide.createIcons();
+        
+        // Scroll suave até o novo endereço
+        setTimeout(() => {
+            wrapper.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }, 100);
     }
 
     function updateNoAddressesMessage() {
@@ -342,10 +498,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const data = Object.fromEntries(formData.entries());
         const id = document.getElementById('companyId').value;
 
-        // Converte is_active para boolean
         data.is_active = document.getElementById('fieldIsActive').checked ? 1 : 0;
 
-        // Coleta endereços
         const addresses = [];
         document.querySelectorAll('#addressesContainer .address-card').forEach(card => {
             const addr = {};
@@ -447,7 +601,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 row.style.transform = 'translateY(0)';
                 
                 if (window.justInsertedId && row.getAttribute('data-id') == window.justInsertedId) {
-                    row.style.backgroundColor = 'rgba(16, 185, 129, 0.1)';
+                    row.style.backgroundColor = 'var(--jc-success-light)';
                     setTimeout(() => {
                         row.style.transition = 'background-color 1s ease';
                         row.style.backgroundColor = 'transparent';
@@ -461,5 +615,262 @@ document.addEventListener('DOMContentLoaded', function() {
     // Carga inicial
     loadData(1);
 });
+
+    // ============================================================
+    // 8. PAINEL LATERAL DE VISUALIZAÇÃO
+    // ============================================================
+    
+    const viewPanel = document.getElementById('viewPanel');
+    const viewOverlay = document.getElementById('viewOverlay');
+    const btnCloseViewPanel = document.getElementById('btnCloseViewPanel');
+    const viewPanelBody = document.getElementById('viewPanelBody');
+    const viewPanelTitle = document.getElementById('viewPanelTitle');
+
+    /**
+     * Abre o painel lateral com os dados da empresa
+     */
+    function openViewPanel(companyId) {
+        // Mostra overlay e painel
+        viewOverlay.classList.add('active');
+        viewPanel.classList.add('open');
+        
+        // Mostra loading
+        viewPanelBody.innerHTML = `
+            <div class="text-center py-5 text-muted-custom">
+                <div class="spinner-border" role="status">
+                    <span class="visually-hidden">Carregando...</span>
+                </div>
+            </div>
+        `;
+        
+        // Busca dados via AJAX
+        axios.get(`{{ url('companies') }}/${companyId}`)
+            .then(response => {
+                if (response.data.success) {
+                    const company = response.data.data;
+                    renderViewPanel(company);
+                }
+            })
+            .catch(error => {
+                console.error('Erro ao carregar empresa:', error);
+                toastError('Erro ao carregar dados da empresa.');
+                closeViewPanel();
+            });
+    }
+
+    /**
+     * Fecha o painel lateral
+     */
+    function closeViewPanel() {
+        viewPanel.classList.remove('open');
+        viewOverlay.classList.remove('active');
+    }
+
+    /**
+     * Renderiza o conteúdo do painel de visualização
+     */
+    function renderViewPanel(company) {
+        viewPanelTitle.textContent = company.trade_name || 'Detalhes da Empresa';
+        
+        const formatDate = (date) => {
+            if (!date) return '-';
+            return new Date(date).toLocaleDateString('pt-BR', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        };
+        
+        const formatPhone = (phone) => {
+            if (!phone) return '-';
+            return phone;
+        };
+        
+        const formatCurrency = (value) => {
+            if (!value) return '-';
+            return new Intl.NumberFormat('pt-BR', {
+                style: 'currency',
+                currency: 'BRL'
+            }).format(value);
+        };
+
+        let html = `
+            {{-- Seção: Informações Gerais --}}
+            <div class="view-section">
+                <div class="view-section-title">
+                    <i data-lucide="info" class="icon-xs"></i>
+                    Informações Gerais
+                </div>
+                
+                <div class="row g-3">
+                    <div class="col-12">
+                        <div class="view-field">
+                            <div class="view-field-label">Nome Fantasia</div>
+                            <div class="view-field-value">${company.trade_name || '-'}</div>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="view-field">
+                            <div class="view-field-label">Razão Social</div>
+                            <div class="view-field-value">${company.corporate_reason || '-'}</div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="view-field">
+                            <div class="view-field-label">CNPJ/CPF</div>
+                            <div class="view-field-value font-monospace">${company.cnpj_cpf || '-'}</div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="view-field">
+                            <div class="view-field-label">Status</div>
+                            <div class="view-field-value">
+                                ${company.is_active 
+                                    ? '<span class="badge-status badge-active">Ativo</span>' 
+                                    : '<span class="badge-status badge-inactive">Inativo</span>'}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="view-field">
+                            <div class="view-field-label">E-mail</div>
+                            <div class="view-field-value">
+                                ${company.email 
+                                    ? `<a href="mailto:${company.email}">${company.email}</a>` 
+                                    : '-'}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="view-field">
+                            <div class="view-field-label">Telefone</div>
+                            <div class="view-field-value">${formatPhone(company.phone)}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Seção: Endereços --}}
+            <div class="view-section">
+                <div class="view-section-title">
+                    <i data-lucide="map-pin" class="icon-xs"></i>
+                    Endereços (${company.addresses ? company.addresses.length : 0})
+                </div>
+        `;
+
+        if (company.addresses && company.addresses.length > 0) {
+            company.addresses.forEach((address, index) => {
+                html += `
+                    <div class="view-address-card">
+                        ${address.is_default ? '<span class="badge-status badge-active">Principal</span>' : ''}
+                        <div class="row g-2">
+                            <div class="col-12">
+                                <div class="view-field-label">Endereço</div>
+                                <div class="view-field-value">
+                                    ${address.street || '-'}${address.number ? ', ' + address.number : ''}
+                                    ${address.complement ? ' - ' + address.complement : ''}
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="view-field-label">Bairro</div>
+                                <div class="view-field-value">${address.district || '-'}</div>
+                            </div>
+                            <div class="col-6">
+                                <div class="view-field-label">Cidade/UF</div>
+                                <div class="view-field-value">${address.city || '-'}/${address.state || '-'}</div>
+                            </div>
+                            <div class="col-6">
+                                <div class="view-field-label">CEP</div>
+                                <div class="view-field-value font-monospace">${address.zip_code || '-'}</div>
+                            </div>
+                            <div class="col-6">
+                                <div class="view-field-label">País</div>
+                                <div class="view-field-value">${address.country || 'Brasil'}</div>
+                            </div>
+                            ${address.label ? `
+                                <div class="col-12">
+                                    <div class="view-field-label">Rótulo</div>
+                                    <div class="view-field-value">${address.label}</div>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+        } else {
+            html += `
+                <div class="text-center text-muted-custom py-3">
+                    <i data-lucide="map-pin-off" class="icon-md mb-2 d-block mx-auto"></i>
+                    Nenhum endereço cadastrado.
+                </div>
+            `;
+        }
+
+        html += `
+            </div>
+
+            {{-- Seção: Informações do Sistema --}}
+            <div class="view-section">
+                <div class="view-section-title">
+                    <i data-lucide="clock" class="icon-xs"></i>
+                    Informações do Sistema
+                </div>
+                
+                <div class="row g-3">
+                    <div class="col-6">
+                        <div class="view-field">
+                            <div class="view-field-label">Criado em</div>
+                            <div class="view-field-value">${formatDate(company.created_at)}</div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="view-field">
+                            <div class="view-field-label">Atualizado em</div>
+                            <div class="view-field-value">${formatDate(company.updated_at)}</div>
+                        </div>
+                    </div>
+                    ${company.responsible ? `
+                        <div class="col-12">
+                            <div class="view-field">
+                                <div class="view-field-label">Responsável pelo Cadastro</div>
+                                <div class="view-field-value">${company.responsible.name || '-'}</div>
+                            </div>
+                        </div>
+                    ` : ''}
+                </div>
+            </div>
+        `;
+
+        viewPanelBody.innerHTML = html;
+        
+        // Re-inicializa ícones Lucide
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
+    }
+
+    // Delegação de evento para botão "Visualizar"
+    document.getElementById('tableBody').addEventListener('click', function(e) {
+        const btnView = e.target.closest('.btn-view-company');
+        if (btnView) {
+            const id = btnView.getAttribute('data-id');
+            openViewPanel(id);
+        }
+    });
+
+    // Fechar painel ao clicar no botão X
+    btnCloseViewPanel?.addEventListener('click', closeViewPanel);
+
+    // Fechar painel ao clicar no overlay
+    viewOverlay?.addEventListener('click', closeViewPanel);
+
+    // Fechar painel com tecla ESC
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && viewPanel.classList.contains('open')) {
+            closeViewPanel();
+        }
+    });
 </script>
 @endpush

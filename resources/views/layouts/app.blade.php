@@ -33,8 +33,9 @@ Regras do playbook:
     {{-- Bootstrap 5.3 --}}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    {{-- CSS customizado --}}
-    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="{{ asset('LogoJurisControl.svg') }}">
+    <!-- Vite -->
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
 <body>
@@ -284,7 +285,8 @@ Regras do playbook:
                                     <div class="fw-semibold" style="font-size: 0.875rem;">{{ auth()->user()->name }}
                                     </div>
                                     <div class="text-muted-custom" style="font-size: 0.75rem;">
-                                        {{ auth()->user()->email }}</div>
+                                        {{ auth()->user()->email }}
+                                    </div>
                                 </div>
                             </li>
                             <li>
@@ -384,7 +386,6 @@ Regras do playbook:
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script src="{{ asset('js/app.js') }}"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
