@@ -1,37 +1,14 @@
-{{--
-App Layout - JurisControl
-Layout inspirado no design Apple Dashboard.
-Regras do playbook:
-- Bootstrap 5.3 + Lucide + SweetAlert2
-- Dark/Light Mode com persistência (sem piscar)
-- Sidebar com colapso (desktop) e FAB (mobile)
-- Header com saudação, notificações e perfil
---}}
 <!DOCTYPE html>
-<html lang="pt-BR" data-bs-theme="light">
+<html lang="en" data-theme="light">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Dashboard') — JurisControl</title>
-
-    {{-- Dark/Light sem piscar (aplica ANTES do CSS) --}}
-    <script>
-        (function () {
-            const t = localStorage.getItem('theme') || 'light';
-            document.documentElement.setAttribute('data-bs-theme', t);
-        })();
-    </script>
-
-    {{-- Google Fonts: Inter --}}
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;450;500;600;700&display=swap"
-        rel="stylesheet">
-
-    {{-- Bootstrap 5.3 --}}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <link rel="icon" type="image/svg+xml" href="{{ asset('LogoJurisControl.svg') }}">
     <!-- Vite -->
@@ -40,544 +17,598 @@ Regras do playbook:
 
 <body>
 
-    <div class="app-layout">
+    <!-- NOTIFICATIONS BACKDROP -->
+    <div class="notifications-backdrop" id="notifBackdrop"></div>
 
-        {{-- ============================================================
-        SIDEBAR
-        ============================================================ --}}
-        <aside class="app-sidebar" id="appSidebar">
+    <!-- NOTIFICATIONS PANEL -->
+    @include('layouts.notifications')
 
-            {{-- Logo + Botão Toggle (desktop) --}}
-            <div class="sidebar-brand">
-                <div class="sidebar-brand-icon">
-                    <i data-lucide="scale" class="icon-sm"></i>
-                </div>
-                <div>
-                    <div class="sidebar-brand-text">JurisControl</div>
-                    <div class="sidebar-brand-sub">ERP Jurídico</div>
-                </div>
-                {{-- Seta toggle: só visível em desktop --}}
-                <button type="button" class="sidebar-collapse-toggle" id="sidebarCollapseToggle"
-                    title="Ocultar/Exibir menu" aria-label="Ocultar/Exibir menu">
-                    <i data-lucide="chevron-left" class="icon-xs"></i>
+
+    <!-- SIDEBAR - Starts expanded on desktop -->
+    @include('layouts.sidebar')
+
+
+    <!-- MAIN -->
+    <div class="main">
+
+        <!-- TOP HEADER -->
+        <div class="top-header">
+            <div class="search-box">
+                <i class="bi bi-search text-muted"></i>
+                <input type="text" placeholder="Search campaigns, posts...">
+            </div>
+
+            <!-- SAUDAÇÃO -->
+            <div class="app-header-greeting">
+                
+                <p>@yield('greeting', 'Bom dia, ' . explode(' ', auth()->user()->name)[0] . '.') @yield('greeting-sub', 'Aqui está o resumo do seu dia.')</p>
+            </div>
+
+<!-- NOTIFICAÇÕES -->
+            <div class="header-actions">
+                <button class="btn-icon" id="notifBtn" title="Notifications">
+                    <i class="bi bi-bell"></i>
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                        style="font-size:0.6rem;">3</span>
+                </button>
+
+                <!-- TEMA CLARO/ESCURO -->
+                <button class="theme-toggle" id="themeToggle" title="Toggle theme">
+                    <i class="bi bi-moon-fill"></i>
+                    <i class="bi bi-sun-fill"></i>
+                </button>
+
+                <!-- BOTÃO CRIAR -->
+                <button class="btn-create" data-bs-toggle="modal" data-bs-target="#createCampaignModal">
+                    <i class="bi bi-plus-lg"></i>
+                    <span>Create campaign</span>
                 </button>
             </div>
+        </div>
 
-            {{-- Navegação (com scroll vertical automático) --}}
-            <nav class="sidebar-nav" id="sidebarNav">
-                <ul class="nav flex-column">
+        <!-- CONTENT -->
+        <div class="content">
 
-                    {{-- Dashboard --}}
-                    <li class="nav-item">
-                        <a href="{{ route('dashboard') }}"
-                            class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}"
-                            data-tooltip="Dashboard">
-                            <i data-lucide="layout-dashboard" class="icon-sm"></i>
-                            <span class="nav-text">Dashboard</span>
-                        </a>
-                    </li>
+         @yield('content')
 
-                    {{-- Processos (com submenu) --}}
-                    <li class="nav-item mt-1">
-                        <a href="#" class="nav-link" data-bs-toggle="collapse" data-bs-target="#menuProcessos"
-                            aria-expanded="false" data-tooltip="Processos">
-                            <i data-lucide="briefcase" class="icon-sm"></i>
-                            <span class="nav-text">Processos</span>
-                            <i data-lucide="chevron-down" class="icon-xs nav-chevron"></i>
-                        </a>
-                        <div class="collapse" id="menuProcessos">
-                            <ul class="nav flex-column sidebar-submenu">
-                                <li><a href="#" class="nav-link">Todos os Processos</a></li>
-                                <li><a href="#" class="nav-link">Processos Ativos</a></li>
-                                <li><a href="#" class="nav-link">Processos Arquivados</a></li>
-                            </ul>
-                        </div>
-                    </li>
+            
 
-                    {{-- Prazos --}}
-                    <li class="nav-item">
-                        <a href="#" class="nav-link" data-tooltip="Prazos">
-                            <i data-lucide="calendar-clock" class="icon-sm"></i>
-                            <span class="nav-text">Prazos</span>
-                        </a>
-                    </li>
+        </div> <!-- CONTENT -->
+    </div>
 
-                    {{-- Clientes (com submenu) --}}
-                    <li class="nav-item">
-                        <a href="#" class="nav-link" data-bs-toggle="collapse" data-bs-target="#menuClientes"
-                            aria-expanded="false" data-tooltip="Clientes">
-                            <i data-lucide="users" class="icon-sm"></i>
-                            <span class="nav-text">Clientes</span>
-                            <i data-lucide="chevron-down" class="icon-xs nav-chevron"></i>
-                        </a>
-                        <div class="collapse" id="menuClientes">
-                            <ul class="nav flex-column sidebar-submenu">
-                                <li><a href="#" class="nav-link">Lista de Clientes</a></li>
-                                <li><a href="#" class="nav-link">Novo Cliente</a></li>
-                                <li><a href="#" class="nav-link">Segmentos</a></li>
-                            </ul>
-                        </div>
-                    </li>
+    <!-- FAB -->
+    <button class="fab" id="fabBtn" title="Open menu"><i class="bi bi-list"></i></button>
 
-                    {{-- Audiências --}}
-                    <li class="nav-item">
-                        <a href="#" class="nav-link" data-tooltip="Audiências">
-                            <i data-lucide="gavel" class="icon-sm"></i>
-                            <span class="nav-text">Audiências</span>
-                        </a>
-                    </li>
-
-                    {{-- Tarefas (com submenu) --}}
-                    <li class="nav-item">
-                        <a href="#" class="nav-link" data-bs-toggle="collapse" data-bs-target="#menuTarefas"
-                            aria-expanded="false" data-tooltip="Tarefas">
-                            <i data-lucide="check-square" class="icon-sm"></i>
-                            <span class="nav-text">Tarefas</span>
-                            <i data-lucide="chevron-down" class="icon-xs nav-chevron"></i>
-                        </a>
-                        <div class="collapse" id="menuTarefas">
-                            <ul class="nav flex-column sidebar-submenu">
-                                <li><a href="#" class="nav-link">Minhas Tarefas</a></li>
-                                <li><a href="#" class="nav-link">Tarefas da Equipe</a></li>
-                                <li><a href="#" class="nav-link">Concluídas</a></li>
-                            </ul>
-                        </div>
-                    </li>
-
-                    {{-- Documentos --}}
-                    <li class="nav-item">
-                        <a href="#" class="nav-link" data-tooltip="Documentos">
-                            <i data-lucide="file-text" class="icon-sm"></i>
-                            <span class="nav-text">Documentos</span>
-                        </a>
-                    </li>
-
-                    {{-- Financeiro (com submenu) --}}
-                    <li class="nav-item mt-1">
-                        <a href="#" class="nav-link" data-bs-toggle="collapse" data-bs-target="#menuFinanceiro"
-                            aria-expanded="false" data-tooltip="Financeiro">
-                            <i data-lucide="wallet" class="icon-sm"></i>
-                            <span class="nav-text">Financeiro</span>
-                            <i data-lucide="chevron-down" class="icon-xs nav-chevron"></i>
-                        </a>
-                        <div class="collapse" id="menuFinanceiro">
-                            <ul class="nav flex-column sidebar-submenu">
-                                <li><a href="#" class="nav-link">Recebimentos</a></li>
-                                <li><a href="#" class="nav-link">Despesas</a></li>
-                                <li><a href="#" class="nav-link">Fluxo de Caixa</a></li>
-                            </ul>
-                        </div>
-                    </li>
-
-                    {{-- Relatórios --}}
-                    <li class="nav-item">
-                        <a href="#" class="nav-link" data-tooltip="Relatórios">
-                            <i data-lucide="bar-chart-3" class="icon-sm"></i>
-                            <span class="nav-text">Relatórios</span>
-                        </a>
-                    </li>
-
-                    {{-- Comunicações --}}
-                    <li class="nav-item">
-                        <a href="#" class="nav-link" data-tooltip="Comunicações">
-                            <i data-lucide="message-circle" class="icon-sm"></i>
-                            <span class="nav-text">Comunicações</span>
-                        </a>
-                    </li>
-
-                    {{-- Agenda --}}
-                    <li class="nav-item">
-                        <a href="#" class="nav-link" data-tooltip="Agenda">
-                            <i data-lucide="calendar" class="icon-sm"></i>
-                            <span class="nav-text">Agenda</span>
-                        </a>
-                    </li>
-
-                    {{-- Seção: Sistema --}}
-                    <li class="nav-item mt-2">
-                        <p class="sidebar-section-title">Sistema</p>
-                    </li>
-
-                    {{-- Configurações (com submenu) --}}
-                    <li class="nav-item">
-                        <a href="#" class="nav-link" data-bs-toggle="collapse" data-bs-target="#menuConfig"
-                            aria-expanded="false" data-tooltip="Configurações">
-                            <i data-lucide="settings" class="icon-sm"></i>
-                            <span class="nav-text">Configurações</span>
-                            <i data-lucide="chevron-down" class="icon-xs nav-chevron"></i>
-                        </a>
-                        <div class="collapse" id="menuConfig">
-                            <ul class="nav flex-column sidebar-submenu">
-                                <li><a href="#" class="nav-link">Geral</a></li>
-                                <li><a href="#" class="nav-link">Usuários</a></li>
-                                <li><a href="#" class="nav-link">Permissões</a></li>
-                                @can('companies.view')
-                                    <li>
-                                        <a href="{{ route('companies.index') }}"
-                                            class="nav-link {{ request()->routeIs('companies.*') ? 'active' : '' }}">
-                                            Empresas
-                                        </a>
-                                    </li>
-                                @endcan
-                                <li><a href="#" class="nav-link">Integrações</a></li>
-                            </ul>
-                        </div>
-                    </li>
-
-                    {{-- Auditoria --}}
-                    @can('audit.logs.view')
-                        <li class="nav-item">
-                            <a href="#" class="nav-link" data-tooltip="Auditoria">
-                                <i data-lucide="history" class="icon-sm"></i>
-                                <span class="nav-text">Auditoria</span>
-                            </a>
-                        </li>
-                    @endcan
-                </ul>
-            </nav>
-
-            {{-- PERFIL REMOVIDO conforme solicitado --}}
-        </aside>
-
-        {{-- Overlay mobile (fecha sidebar ao clicar fora) --}}
-        <div class="sidebar-overlay" id="sidebarOverlay"></div>
-
-        {{-- ============================================================
-        MAIN CONTENT
-        ============================================================ --}}
-        <div class="app-main">
-
-            {{-- Header --}}
-            <header class="app-header">
-                {{-- Saudação --}}
-                <div class="app-header-greeting">
-                    <h1>@yield('greeting', 'Bom dia, ' . explode(' ', auth()->user()->name)[0] . '.')</h1>
-                    <p>@yield('greeting-sub', 'Aqui está o resumo do seu dia.')</p>
+    <!-- CREATE CAMPAIGN MODAL -->
+    <div class="modal fade" id="createCampaignModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="bi bi-megaphone-fill text-primary me-2"></i>Create new campaign
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-
-                {{-- Ações do header --}}
-                <div class="app-header-actions">
-                    {{-- Toggle tema --}}
-                    <button type="button" class="btn-theme-toggle" id="themeToggle" title="Alternar tema"
-                        aria-label="Alternar tema">
-                        <i data-lucide="moon" class="icon-sm" id="themeIcon"></i>
-                    </button>
-
-                    {{-- Notificações --}}
-                    <button type="button" class="btn-notification" id="btnNotifications" title="Notificações"
-                        aria-label="Notificações">
-                        <i data-lucide="bell" class="icon-sm"></i>
-                        <span class="notification-badge">3</span>
-                    </button>
-
-                    {{-- Perfil dropdown --}}
-                    <div class="dropdown">
-                        <button class="header-profile-btn" type="button" data-bs-toggle="dropdown"
-                            aria-expanded="false">
-                            <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name) }}&background=4f46e5&color=fff&size=56&font-size=0.4"
-                                alt="{{ auth()->user()->name }}" class="header-profile-avatar">
-                            <span class="d-none d-md-inline">{{ explode(' ', auth()->user()->name)[0] }}</span>
-                            <i data-lucide="chevron-down" class="icon-xs"></i>
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-end shadow-sm" style="min-width: 200px;">
-                            <li>
-                                <div class="dropdown-item-text py-2">
-                                    <div class="fw-semibold" style="font-size: 0.875rem;">{{ auth()->user()->name }}
-                                    </div>
-                                    <div class="text-muted-custom" style="font-size: 0.75rem;">
-                                        {{ auth()->user()->email }}
-                                    </div>
-                                </div>
-                            </li>
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
-                            <li><a class="dropdown-item d-flex align-items-center gap-2" href="#"><i data-lucide="user"
-                                        class="icon-xs"></i> Meu Perfil</a></li>
-                            <li><a class="dropdown-item d-flex align-items-center gap-2" href="#"><i
-                                        data-lucide="settings" class="icon-xs"></i> Configurações</a></li>
-                            <li><a class="dropdown-item d-flex align-items-center gap-2" href="#"><i
-                                        data-lucide="shield" class="icon-xs"></i> Privacidade</a></li>
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
-                            <li>
-                                <form action="{{ route('logout') }}" method="POST" class="m-0">
-                                    @csrf
-                                    <button type="submit"
-                                        class="dropdown-item d-flex align-items-center gap-2 text-danger">
-                                        <i data-lucide="log-out" class="icon-xs"></i> Sair
-                                    </button>
-                                </form>
-                            </li>
-                        </ul>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label-custom">Campaign name</label>
+                        <input type="text" class="form-control form-control-custom" placeholder="e.g. Summer Sale 2026">
+                    </div>
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label-custom">Channel</label>
+                            <select class="form-select form-select-custom">
+                                <option>Instagram</option>
+                                <option>Facebook</option>
+                                <option>TikTok</option>
+                                <option>Google Ads</option>
+                                <option>LinkedIn</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label-custom">Goal</label>
+                            <select class="form-select form-select-custom">
+                                <option>Brand Awareness</option>
+                                <option>Lead Generation</option>
+                                <option>Conversions</option>
+                                <option>Engagement</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label-custom">Budget</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" class="form-control form-control-custom" placeholder="1000">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label-custom">Duration</label>
+                            <select class="form-select form-select-custom">
+                                <option>7 days</option>
+                                <option>14 days</option>
+                                <option>30 days</option>
+                                <option>90 days</option>
+                                <option>Custom</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label-custom">Description</label>
+                        <textarea class="form-control form-control-custom" rows="3"
+                            placeholder="Describe your campaign objectives..."></textarea>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="activateCampaign" checked>
+                        <label class="form-check-label" for="activateCampaign" style="font-size:0.9rem;">Activate
+                            campaign immediately</label>
                     </div>
                 </div>
-            </header>
-
-            {{-- Conteúdo da página --}}
-            <main class="app-content">
-                @yield('content')
-            </main>
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn-submit"><i class="bi bi-rocket-takeoff me-1"></i> Create
+                        campaign</button>
+                </div>
+            </div>
         </div>
     </div>
 
-    {{-- ============================================================
-    BOTÃO TOGGLE MOBILE (FAB - Floating Action Button)
-    Igual à imagem 3 em anexo (botão azul flutuante)
-    ============================================================ --}}
-    <button type="button" class="sidebar-mobile-toggle" id="sidebarMobileToggle" title="Abrir menu"
-        aria-label="Abrir menu">
-        <i data-lucide="menu" class="icon-md"></i>
-    </button>
-
-    {{-- ============================================================
-    PAINEL DE NOTIFICAÇÕES (Slide-in lateral)
-    ============================================================ --}}
-    <div class="overlay" id="overlayNotifications"></div>
-    <div class="notification-panel" id="notificationPanel">
-        <div class="notification-panel-header">
-            <h6 class="fw-semibold mb-0">Notificações</h6>
-            <button type="button" class="btn btn-sm btn-link text-muted p-0" id="btnCloseNotifications">
-                <i data-lucide="x" class="icon-sm"></i>
-            </button>
-        </div>
-        <div class="notification-panel-body">
-            <div class="notification-item d-flex gap-3">
-                <div class="notification-dot mt-1" style="background-color: var(--jc-info);"></div>
-                <div>
-                    <div class="fw-medium" style="font-size: 0.8125rem;">Audiência confirmada</div>
-                    <div class="text-muted-custom" style="font-size: 0.75rem;">Audiência Trabalhista às 09:00</div>
-                    <div class="text-light-custom" style="font-size: 0.6875rem; margin-top: 2px;">Há 5 minutos</div>
+    <!-- CREATE POST MODAL -->
+    <div class="modal fade" id="createPostModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="bi bi-file-earmark-post-fill text-primary me-2"></i>Create new
+                        post</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label-custom">Post title</label>
+                        <input type="text" class="form-control form-control-custom"
+                            placeholder="e.g. New Product Launch">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label-custom">Content</label>
+                        <textarea class="form-control form-control-custom" rows="4"
+                            placeholder="Write your post content..."></textarea>
+                    </div>
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label-custom">Channel</label>
+                            <select class="form-select form-select-custom">
+                                <option>Instagram</option>
+                                <option>Facebook</option>
+                                <option>TikTok</option>
+                                <option>LinkedIn</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label-custom">Campaign</label>
+                            <select class="form-select form-select-custom">
+                                <option>Marketing strategy</option>
+                                <option>Summer Sale 2026</option>
+                                <option>Brand Awareness Q3</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label-custom">Daily budget</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" class="form-control form-control-custom" placeholder="100">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label-custom">Schedule</label>
+                            <input type="datetime-local" class="form-control form-control-custom">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label-custom">Media</label>
+                        <div style="border:2px dashed var(--border); border-radius:12px; padding:2rem; text-align:center; color:var(--text-secondary); cursor:pointer; transition:all 0.2s;"
+                            onmouseover="this.style.borderColor='var(--primary)'"
+                            onmouseout="this.style.borderColor='var(--border)'">
+                            <i class="bi bi-cloud-arrow-up" style="font-size:2rem; color:var(--primary);"></i>
+                            <div class="mt-2" style="font-size:0.9rem;">Click or drag files to upload</div>
+                            <div style="font-size:0.75rem; color:var(--text-muted);">PNG, JPG, MP4 up to 50MB</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn-cancel"
+                        style="color:var(--primary); border-color:var(--primary);"><i class="bi bi-clock me-1"></i>
+                        Schedule</button>
+                    <button type="button" class="btn-submit"><i class="bi bi-send me-1"></i> Publish now</button>
                 </div>
             </div>
-            <div class="notification-item d-flex gap-3">
-                <div class="notification-dot mt-1" style="background-color: var(--jc-danger);"></div>
-                <div>
-                    <div class="fw-medium" style="font-size: 0.8125rem;">Prazo crítico</div>
-                    <div class="text-muted-custom" style="font-size: 0.75rem;">Processo vence em 2 dias</div>
-                    <div class="text-light-custom" style="font-size: 0.6875rem; margin-top: 2px;">Há 1 hora</div>
-                </div>
-            </div>
-            <div class="notification-item d-flex gap-3">
-                <div class="notification-dot mt-1" style="background-color: var(--jc-success);"></div>
-                <div>
-                    <div class="fw-medium" style="font-size: 0.8125rem;">Documento aprovado</div>
-                    <div class="text-muted-custom" style="font-size: 0.75rem;">Petição protocolada</div>
-                    <div class="text-light-custom" style="font-size: 0.6875rem; margin-top: 2px;">Há 3 horas</div>
-                </div>
-            </div>
-            <div class="notification-item d-flex gap-3">
-                <div class="notification-dot mt-1" style="background-color: var(--jc-warning);"></div>
-                <div>
-                    <div class="fw-medium" style="font-size: 0.8125rem;">Novo documento</div>
-                    <div class="text-muted-custom" style="font-size: 0.75rem;">Contrato social adicionado</div>
-                    <div class="text-light-custom" style="font-size: 0.6875rem; margin-top: 2px;">Ontem</div>
-                </div>
-            </div>
-        </div>
-        <div class="p-3 border-top border-jc text-center">
-            <a href="#" class="text-primary" style="font-size: 0.8125rem; font-weight: 500;">Ver todas</a>
         </div>
     </div>
 
-    {{-- Scripts --}}
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // Inicializa ícones Lucide
-            if (typeof lucide !== 'undefined') lucide.createIcons();
+        // SIDEBAR TOGGLE - Desktop: starts expanded, toggle adds/removes 'collapsed'
+        const sidebar = document.getElementById('sidebar');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const fabBtn = document.getElementById('fabBtn');
 
-            // ============================================================
-            // SIDEBAR: COLAPSO (DESKTOP) + MOBILE TOGGLE
-            // ============================================================
-            const sidebar = document.getElementById('appSidebar');
-            const collapseToggle = document.getElementById('sidebarCollapseToggle');
-            const mobileToggle = document.getElementById('sidebarMobileToggle');
-            const overlay = document.getElementById('sidebarOverlay');
+        function isMobile() { return window.innerWidth <= 992; }
 
-            // Chave de persistência no localStorage
-            const STORAGE_KEY = 'jc_sidebar_collapsed';
-
-            /**
-             * Aplica o estado colapsado/expandido no desktop.
-             * No mobile, esse método não tem efeito (usa mobile-open).
-             */
-            function applyDesktopCollapse(collapsed) {
-                if (window.innerWidth < 992) return; // só aplica em desktop
-
-                if (collapsed) {
-                    sidebar.classList.add('collapsed');
-                    document.body.classList.add('sidebar-collapsed');
-                } else {
-                    sidebar.classList.remove('collapsed');
-                    document.body.classList.remove('sidebar-collapsed');
-                }
-
-                // Persiste a preferência
-                try {
-                    localStorage.setItem(STORAGE_KEY, collapsed ? '1' : '0');
-                } catch (e) { }
-
-                // Re-renderiza ícones Lucide (pois tooltips mudaram)
-                if (typeof lucide !== 'undefined') lucide.createIcons();
+        function toggleSidebar() {
+            if (isMobile()) {
+                sidebar.classList.toggle('mobile-open');
+            } else {
+                sidebar.classList.toggle('collapsed');
             }
+        }
 
-            /**
-             * Abre a sidebar no mobile.
-             */
-            function openMobileSidebar() {
-                sidebar.classList.add('mobile-open');
-                overlay.classList.add('active');
-                document.body.style.overflow = 'hidden'; // evita scroll do body
-            }
+        sidebarToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleSidebar();
+        });
 
-            /**
-             * Fecha a sidebar no mobile.
-             */
-            function closeMobileSidebar() {
+        fabBtn.addEventListener('click', () => {
+            sidebar.classList.add('mobile-open');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (isMobile() && sidebar.classList.contains('mobile-open') && !sidebar.contains(e.target) && e.target !== fabBtn) {
                 sidebar.classList.remove('mobile-open');
-                overlay.classList.remove('active');
-                document.body.style.overflow = '';
             }
+        });
 
-            // ----------------------------------------------------------
-            // Toggle desktop (seta ao lado do logo)
-            // ----------------------------------------------------------
-            collapseToggle?.addEventListener('click', function (e) {
-                e.stopPropagation();
-                const isCollapsed = sidebar.classList.contains('collapsed');
-                applyDesktopCollapse(!isCollapsed);
+        // SUBMENUS
+        document.querySelectorAll('[data-submenu]').forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                const submenuId = item.getAttribute('data-submenu');
+                const submenu = document.getElementById(submenuId);
+                const arrow = item.querySelector('.sidebar-item-arrow');
+
+                document.querySelectorAll('.sidebar-submenu').forEach(sm => {
+                    if (sm.id !== submenuId) sm.classList.remove('open');
+                });
+                document.querySelectorAll('.sidebar-item-arrow').forEach(ar => {
+                    if (ar !== arrow) ar.classList.remove('rotated');
+                });
+
+                submenu.classList.toggle('open');
+                arrow.classList.toggle('rotated');
             });
+        });
 
-            // ----------------------------------------------------------
-            // Toggle mobile (FAB azul)
-            // ----------------------------------------------------------
-            mobileToggle?.addEventListener('click', function () {
-                if (sidebar.classList.contains('mobile-open')) {
-                    closeMobileSidebar();
-                } else {
-                    openMobileSidebar();
+        // FILTER DROPDOWNS
+        document.querySelectorAll('.filter-btn[data-filter]').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const filterId = btn.getAttribute('data-filter');
+                const menu = document.getElementById('filter-' + filterId);
+
+                document.querySelectorAll('.filter-menu').forEach(m => {
+                    if (m.id !== 'filter-' + filterId) m.classList.remove('show');
+                });
+
+                menu.classList.toggle('show');
+            });
+        });
+
+        document.querySelectorAll('.filter-menu-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const menu = item.closest('.filter-menu');
+                const btn = menu.previousElementSibling;
+
+                menu.querySelectorAll('.filter-menu-item').forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+
+                const icon = item.querySelector('i');
+                const text = item.textContent.trim();
+
+                if (btn.getAttribute('data-filter') === 'channel') {
+                    btn.innerHTML = icon.outerHTML + ' Channel: ' + text + ' <i class="bi bi-chevron-down"></i>';
+                } else if (btn.getAttribute('data-filter') === 'goals') {
+                    btn.innerHTML = 'Goals: ' + text + ' <i class="bi bi-chevron-down"></i>';
+                } else if (btn.getAttribute('data-filter') === 'date') {
+                    btn.innerHTML = '<i class="bi bi-calendar3"></i> ' + text + ' <i class="bi bi-chevron-down"></i>';
+                }
+
+                menu.classList.remove('show');
+            });
+        });
+
+        // ACTION DROPDOWNS
+        document.querySelectorAll('.action-btn[data-action]').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const actionId = btn.getAttribute('data-action');
+                const menu = document.getElementById('action-menu-' + actionId);
+
+                document.querySelectorAll('.action-menu').forEach(m => {
+                    if (m.id !== 'action-menu-' + actionId) m.classList.remove('show');
+                });
+
+                menu.classList.toggle('show');
+            });
+        });
+
+        document.querySelectorAll('.action-menu-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const menu = item.closest('.action-menu');
+                menu.classList.remove('show');
+
+                const action = item.getAttribute('data-act');
+                const row = item.closest('tr');
+
+                if (action === 'delete' && row) {
+                    row.classList.add('row-deleting');
+                    setTimeout(() => {
+                        row.remove();
+                        updatePostCount();
+                    }, 800);
                 }
             });
+        });
 
-            // Fecha sidebar mobile ao clicar no overlay
-            overlay?.addEventListener('click', closeMobileSidebar);
+        document.addEventListener('click', () => {
+            document.querySelectorAll('.filter-menu, .action-menu').forEach(m => m.classList.remove('show'));
+        });
 
-            // ----------------------------------------------------------
-            // Comportamento ACCORDION: fecha outros submenus ao abrir um
-            // ----------------------------------------------------------
-            const submenuToggles = sidebar.querySelectorAll('[data-bs-toggle="collapse"]');
-            submenuToggles.forEach(toggle => {
-                toggle.addEventListener('click', function (e) {
-                    const targetId = this.getAttribute('data-bs-target');
-                    const targetEl = document.querySelector(targetId);
-                    const isCurrentlyOpen = targetEl?.classList.contains('show');
+        document.querySelectorAll('.filter-menu, .action-menu').forEach(menu => {
+            menu.addEventListener('click', (e) => e.stopPropagation());
+        });
 
-                    // Se a sidebar está colapsada no desktop, expande primeiro
-                    if (sidebar.classList.contains('collapsed') && window.innerWidth >= 992) {
-                        e.preventDefault();
-                        applyDesktopCollapse(false);
+        // TABS
+        document.querySelectorAll('.tab-item').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+            });
+        });
 
-                        // Aguarda a animação de expansão e depois abre o submenu
+        // THEME TOGGLE
+        const themeToggle = document.getElementById('themeToggle');
+        const html = document.documentElement;
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        html.setAttribute('data-theme', savedTheme);
+
+        themeToggle.addEventListener('click', () => {
+            const current = html.getAttribute('data-theme');
+            const next = current === 'light' ? 'dark' : 'light';
+            html.setAttribute('data-theme', next);
+            localStorage.setItem('theme', next);
+        });
+
+        // NOTIFICATIONS PANEL
+        const notifBtn = document.getElementById('notifBtn');
+        const notifPanel = document.getElementById('notifPanel');
+        const notifBackdrop = document.getElementById('notifBackdrop');
+        const notifClose = document.getElementById('notifClose');
+
+        function openNotif() { notifPanel.classList.add('show'); notifBackdrop.classList.add('show'); }
+        function closeNotif() { notifPanel.classList.remove('show'); notifBackdrop.classList.remove('show'); }
+
+        notifBtn.addEventListener('click', openNotif);
+        notifClose.addEventListener('click', closeNotif);
+        notifBackdrop.addEventListener('click', closeNotif);
+
+        // HIDE ALERTS
+        const hideAlerts = document.getElementById('hideAlerts');
+        const alertsSection = document.getElementById('alertsSection');
+
+        hideAlerts.addEventListener('click', () => {
+            alertsSection.style.display = 'none';
+        });
+
+        // COUNTER ANIMATION
+        function animateCounter(el) {
+            const target = parseFloat(el.getAttribute('data-target'));
+            const prefix = el.getAttribute('data-prefix') || '';
+            const suffix = el.getAttribute('data-suffix') || '';
+            const format = el.getAttribute('data-format');
+            const duration = 1500;
+            const startTime = performance.now();
+
+            function update(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const eased = 1 - Math.pow(1 - progress, 3);
+                const current = target * eased;
+
+                let display;
+                if (format === 'currency') {
+                    display = prefix + Math.floor(current).toLocaleString() + suffix;
+                } else if (format === 'number') {
+                    display = prefix + Math.floor(current).toLocaleString() + suffix;
+                } else {
+                    display = prefix + current.toFixed(target % 1 !== 0 ? 1 : 0) + suffix;
+                }
+
+                el.textContent = display;
+
+                if (progress < 1) {
+                    requestAnimationFrame(update);
+                }
+            }
+
+            requestAnimationFrame(update);
+        }
+
+        const counterObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    animateCounter(entry.target);
+                    counterObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.5 });
+
+        document.querySelectorAll('.counter').forEach(el => counterObserver.observe(el));
+
+        // PROGRESS BAR ANIMATION
+        const progressObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const width = entry.target.getAttribute('data-width');
+                    setTimeout(() => {
+                        entry.target.style.width = width;
+                    }, 300);
+                    progressObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.5 });
+
+        document.querySelectorAll('.campaign-progress-fill').forEach(el => progressObserver.observe(el));
+
+        // ADD RECORD
+        const addRecordBtn = document.getElementById('addRecordBtn');
+        let recordId = 5;
+
+        addRecordBtn.addEventListener('click', () => {
+            const tbody = document.getElementById('postsBody');
+            const newRow = document.createElement('tr');
+            newRow.setAttribute('data-id', recordId);
+            newRow.classList.add('row-adding');
+
+            const titles = ['Flash Sale: 50% Off Everything!', 'Summer Collection Launch 2026', 'Behind the Scenes: Our Team', 'Customer Success Story'];
+            const audiences = ['75,000', '110,000', '45,000', '62,000'];
+            const rois = ['2.5x', '3.8x', '1.9x', '2.7x'];
+            const ctrs = ['3.2%', '4.1%', '2.5%', '3.6%'];
+            const cpls = ['$2.10', '$1.80', '$3.50', '$2.40'];
+            const budgets = ['$75/day', '$120/day', '$60/day', '$85/day'];
+
+            const idx = Math.floor(Math.random() * titles.length);
+
+            newRow.innerHTML = `
+      <td class="post-title-cell"><i class="bi bi-instagram"></i> ${titles[idx]}</td>
+      <td class="fw-semibold">${audiences[idx]}</td>
+      <td><span class="roi-badge">${rois[idx]}</span></td>
+      <td>${ctrs[idx]}</td>
+      <td>${cpls[idx]}</td>
+      <td>${budgets[idx]}</td>
+      <td>
+        <div class="manager-cell">
+          <div class="manager-avatar avatar-lj">LJ</div>
+          <div><p class="manager-name">Louis Jensen</p><p class="manager-role">SMM manager</p></div>
+        </div>
+      </td>
+      <td>
+        <div class="action-dropdown">
+          <button class="action-btn" data-action="${recordId}"><i class="bi bi-three-dots-vertical"></i></button>
+          <div class="action-menu" id="action-menu-${recordId}">
+            <button class="action-menu-item" data-act="view"><i class="bi bi-eye"></i> View</button>
+            <button class="action-menu-item" data-act="edit"><i class="bi bi-pencil"></i> Edit</button>
+            <button class="action-menu-item danger" data-act="delete"><i class="bi bi-trash3"></i> Delete</button>
+          </div>
+        </div>
+      </td>
+    `;
+
+            tbody.insertBefore(newRow, tbody.firstChild);
+            recordId++;
+            updatePostCount();
+
+            const newActionBtn = newRow.querySelector('.action-btn');
+            newActionBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const actionId = newActionBtn.getAttribute('data-action');
+                const menu = document.getElementById('action-menu-' + actionId);
+
+                document.querySelectorAll('.action-menu').forEach(m => {
+                    if (m.id !== 'action-menu-' + actionId) m.classList.remove('show');
+                });
+
+                menu.classList.toggle('show');
+            });
+
+            const newMenuItems = newRow.querySelectorAll('.action-menu-item');
+            newMenuItems.forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const menu = item.closest('.action-menu');
+                    menu.classList.remove('show');
+
+                    const action = item.getAttribute('data-act');
+                    const row = item.closest('tr');
+
+                    if (action === 'delete' && row) {
+                        row.classList.add('row-deleting');
                         setTimeout(() => {
-                            // Fecha TODOS os outros submenus primeiro
-                            submenuToggles.forEach(otherToggle => {
-                                if (otherToggle !== this) {
-                                    const otherTargetId = otherToggle.getAttribute('data-bs-target');
-                                    const otherTarget = document.querySelector(otherTargetId);
-                                    if (otherTarget && otherTarget.classList.contains('show')) {
-                                        const bsCollapse = new bootstrap.Collapse(otherTarget, { toggle: false });
-                                        bsCollapse.hide();
-                                    }
-                                }
-                            });
-
-                            // Abre o submenu clicado
-                            if (targetEl && !isCurrentlyOpen) {
-                                const bsCollapse = new bootstrap.Collapse(targetEl, { toggle: true });
-                            }
-                        }, 280);
-                    } else {
-                        // Comportamento normal: fecha outros submenus
-                        e.preventDefault();
-
-                        submenuToggles.forEach(otherToggle => {
-                            if (otherToggle !== this) {
-                                const otherTargetId = otherToggle.getAttribute('data-bs-target');
-                                const otherTarget = document.querySelector(otherTargetId);
-                                if (otherTarget && otherTarget.classList.contains('show')) {
-                                    const bsCollapse = new bootstrap.Collapse(otherTarget, { toggle: false });
-                                    bsCollapse.hide();
-                                }
-                            }
-                        });
-
-                        // Toggle do submenu clicado
-                        if (targetEl) {
-                            const bsCollapse = new bootstrap.Collapse(targetEl, { toggle: true });
-                        }
+                            row.remove();
+                            updatePostCount();
+                        }, 800);
                     }
                 });
             });
 
-            // ----------------------------------------------------------
-            // Restaura estado da sidebar no carregamento
-            // ----------------------------------------------------------
-            try {
-                const saved = localStorage.getItem(STORAGE_KEY);
-                if (saved === '1') {
-                    applyDesktopCollapse(true);
-                }
-            } catch (e) { }
+            setTimeout(() => { newRow.classList.remove('row-adding'); }, 1200);
+        });
 
-            // ----------------------------------------------------------
-            // Ajusta em resize de tela
-            // ----------------------------------------------------------
-            let resizeTimer;
-            window.addEventListener('resize', function () {
-                clearTimeout(resizeTimer);
-                resizeTimer = setTimeout(function () {
-                    if (window.innerWidth >= 992) {
-                        // Voltando para desktop: fecha modo mobile se estiver aberto
-                        closeMobileSidebar();
-                    } else {
-                        // Indo para mobile: remove estado collapsed do desktop
-                        sidebar.classList.remove('collapsed');
-                        document.body.classList.remove('sidebar-collapsed');
-                    }
-                }, 150);
+        function updatePostCount() {
+            const count = document.querySelectorAll('#postsBody tr').length;
+            document.getElementById('postCount').textContent = count;
+            document.getElementById('showingCount').textContent = count;
+            document.getElementById('totalCount').textContent = count;
+        }
+
+        // PAGINATION
+        document.querySelectorAll('.page-btn[data-page]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.page-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                const page = parseInt(btn.getAttribute('data-page'));
+                document.getElementById('prevPage').disabled = page === 1;
+                document.getElementById('nextPage').disabled = page === 3;
             });
+        });
 
-            // ============================================================
-            // PAINEL DE NOTIFICAÇÕES (slide-in)
-            // ============================================================
-            const notifPanel = document.getElementById('notificationPanel');
-            const notifOverlay = document.getElementById('overlayNotifications');
-            const btnNotifOpen = document.getElementById('btnNotifications');
-            const btnNotifClose = document.getElementById('btnCloseNotifications');
-
-            function openNotifPanel() {
-                notifPanel.classList.add('open');
-                notifOverlay.classList.add('active');
+        document.getElementById('prevPage').addEventListener('click', () => {
+            const active = document.querySelector('.page-btn.active');
+            const page = parseInt(active.getAttribute('data-page'));
+            if (page > 1) {
+                document.querySelectorAll('.page-btn').forEach(b => b.classList.remove('active'));
+                document.querySelector(`.page-btn[data-page="${page - 1}"]`).classList.add('active');
+                document.getElementById('prevPage').disabled = page - 1 === 1;
+                document.getElementById('nextPage').disabled = false;
             }
+        });
 
-            function closeNotifPanel() {
-                notifPanel.classList.remove('open');
-                notifOverlay.classList.remove('active');
+        document.getElementById('nextPage').addEventListener('click', () => {
+            const active = document.querySelector('.page-btn.active');
+            const page = parseInt(active.getAttribute('data-page'));
+            if (page < 3) {
+                document.querySelectorAll('.page-btn').forEach(b => b.classList.remove('active'));
+                document.querySelector(`.page-btn[data-page="${page + 1}"]`).classList.add('active');
+                document.getElementById('nextPage').disabled = page + 1 === 3;
+                document.getElementById('prevPage').disabled = false;
             }
-
-            btnNotifOpen?.addEventListener('click', openNotifPanel);
-            btnNotifClose?.addEventListener('click', closeNotifPanel);
-            notifOverlay?.addEventListener('click', closeNotifPanel);
         });
     </script>
+    <div class="sidebar-backdrop"></div>
+    <script>document.addEventListener("DOMContentLoaded", () => { const fab = document.getElementById("fab-toggle") || document.querySelector(".fab"); const sidebar = document.querySelector(".sidebar"); const bd = document.querySelector(".sidebar-backdrop"); if (!fab || !sidebar || !bd) return; const open = () => { sidebar.classList.add("show"); bd.classList.add("show") }; const close = () => { sidebar.classList.remove("show"); bd.classList.remove("show") }; fab.addEventListener("click", e => { if (window.innerWidth <= 991.98) { e.stopPropagation(); open(); } }); bd.addEventListener("click", close); document.addEventListener("click", e => { if (window.innerWidth <= 991.98 && sidebar.classList.contains("show") && !sidebar.contains(e.target) && !fab.contains(e.target)) close(); }); });</script>
+    <style>
+        .sidebar-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .35);
+            opacity: 0;
+            visibility: hidden;
+            transition: .25s;
+            z-index: 1039
+        }
 
-    @stack('scripts')
+        .sidebar-backdrop.show {
+            opacity: 1;
+            visibility: visible
+        }
+
+        .sidebar {
+            z-index: 1040
+        }
+    </style>
 </body>
 
 </html>
