@@ -19,32 +19,35 @@
             <span class="sidebar-item-text">Dashboard</span>
         </a>
         {{-- Empresas --}}
-        <div>
-            <a href="#" class="sidebar-item {{ request()->routeIs('companies.*') ? 'active' : '' }}"
-                title="Gestão de Empresas" data-submenu="campaigns-sub">
-                <span class="sidebar-item-icon"><i class="bi bi-buildings"></i></span>
-                <span class="sidebar-item-text">Empresas</span>
-                <span class="sidebar-item-badge">12</span>
-                <i class="bi bi-chevron-down sidebar-item-arrow"></i>
-            </a>
-            <div class="sidebar-submenu" id="campaigns-sub">
-                @can('companies.view')
+        @can('companies.view')
+            <div>
+                <a href="#" class="sidebar-item {{ request()->routeIs('companies.*') ? 'active' : '' }}"
+                    title="Gestão de Empresas" data-submenu="campaigns-sub">
+                    <span class="sidebar-item-icon"><i class="bi bi-buildings"></i></span>
+                    <span class="sidebar-item-text">Empresas</span>
+                    <span class="sidebar-item-badge">12</span>
+                    <i class="bi bi-chevron-down sidebar-item-arrow"></i>
+                </a>
+                <div class="sidebar-submenu" id="campaigns-sub">
+
                     <a href="{{ route('companies.index') }}" title="Escritórios" class="sidebar-item active"><span
                             class="sidebar-item-icon"></span><span class="sidebar-item-text">Escritórios</span></a>
-                @endcan
-                <a href="#" title="" class="sidebar-item"><span class="sidebar-item-icon"></span><span
-                        class="sidebar-item-text">Active</span></a>
-                <a href="#" title="" class="sidebar-item"><span class="sidebar-item-icon"></span><span
-                        class="sidebar-item-text">Drafts</span></a>
-                <a href="#" title="" class="sidebar-item"><span class="sidebar-item-icon"></span><span
-                        class="sidebar-item-text">Archived</span></a>
+
+                    <a href="#" title="" class="sidebar-item"><span class="sidebar-item-icon"></span><span
+                            class="sidebar-item-text">Active</span></a>
+                    <a href="#" title="" class="sidebar-item"><span class="sidebar-item-icon"></span><span
+                            class="sidebar-item-text">Drafts</span></a>
+                    <a href="#" title="" class="sidebar-item"><span class="sidebar-item-icon"></span><span
+                            class="sidebar-item-text">Archived</span></a>
+                </div>
             </div>
-        </div>
+        @endcan
 
         {{-- Agenda --}}
         <a href="#" class="sidebar-item" title="Gestão de Agenda">
             <span class="sidebar-item-icon"><i class="bi bi-alarm"></i></span>
             <span class="sidebar-item-text">Agenda</span>
+            <span class="sidebar-item-badge">12</span>
         </a>
 
         {{-- Clientes --}}
@@ -75,7 +78,6 @@
             <a href="#" title="Gestão de Documentos" class="sidebar-item" data-submenu="tasks-sub">
                 <span class="sidebar-item-icon"><i class="bi bi-file-text"></i></span>
                 <span class="sidebar-item-text">Documentos</span>
-                <span class="sidebar-item-badge">5</span>
                 <i class="bi bi-chevron-down sidebar-item-arrow"></i>
             </a>
             <div class="sidebar-submenu" id="tasks-sub">
@@ -123,7 +125,6 @@
             <a href="#" title="Relatórios" class="sidebar-item" data-submenu="report-sub">
                 <span class="sidebar-item-icon"><i class="bi bi-bar-chart-fill"></i></span>
                 <span class="sidebar-item-text">Relatórios</span>
-                <span class="sidebar-item-badge">5</span>
                 <i class="bi bi-chevron-down sidebar-item-arrow"></i>
             </a>
             <div class="sidebar-submenu" id="report-sub">
@@ -138,16 +139,27 @@
             </div>
         </div>
 
-        <a href="#" title="" class="sidebar-item">
-            <span class="sidebar-item-icon"><i class="bi bi-plug-fill"></i></span>
-            <span class="sidebar-item-text">Integrations</span>
-        </a>
-        <a href="#" title="" class="sidebar-item">
-            <span class="sidebar-item-icon"><i class="bi bi-bell-fill"></i></span>
-            <span class="sidebar-item-text">Notifications</span>
-            <span class="sidebar-item-badge">3</span>
-        </a>
+        {{-- Configurações do Escritório --}}
+        <div>
+            <a href="#" title="Relatórios" class="sidebar-item" data-submenu="office-config-sub">
+                <span class="sidebar-item-icon"><i class="bi bi-gear-fill"></i></span>
+                <span class="sidebar-item-text">Config. do Escritório</span>
+                <i class="bi bi-chevron-down sidebar-item-arrow"></i>
+            </a>
+            <div class="sidebar-submenu" id="office-config-sub">
+                <a href="#" title="Faturas" class="sidebar-item"><span class="sidebar-item-icon"></span><span
+                        class="sidebar-item-text">Tags</span></a>
+                <a href="#" title="Pagamentos" class="sidebar-item"><span class="sidebar-item-icon"></span><span
+                        class="sidebar-item-text">Categ. Tarefas</span></a>
+                <a href="#" title="Fornecedores" class="sidebar-item"><span class="sidebar-item-icon"></span><span
+                        class="sidebar-item-text">Categ. Financeiro</span></a>
+                <a href="#" title="Carteiras" class="sidebar-item"><span class="sidebar-item-icon"></span><span
+                        class="sidebar-item-text">Integrações</span></a>
+            </div>
+        </div>
+
     </nav>
+
     {{-- Suporte e Configurações Padrão --}}
     <div class="sidebar-bottom">
 
@@ -157,7 +169,7 @@
             <span class="sidebar-item-text">Suporte</span>
         </a>
 
-        {{-- Configurações --}}
+        {{-- Configurações - Somente SuperAdmin JurisControl --}}
         <div>
             <a href="#" title="Configurações" class="sidebar-item" data-submenu="config-sub">
                 <span class="sidebar-item-icon"><i class="bi bi-gear-fill"></i></span>
@@ -177,10 +189,12 @@
         </div>
 
         {{-- Sair do sistema --}}
-        <a href="{{ route('logout') }} " class="sidebar-item" title="Sair do sistema">
-            <span class="sidebar-item-icon"><i class="bi bi-box-arrow-right"></i></span>
-            <span class="sidebar-item-text">Sair</span>
-        </a>
+        <form class="sidebar-item" title="Sair do sistema" action="{{ route('logout') }}" method="POST" class="m-0">
+            @csrf
+            <button type="submit" class="dropdown-item d-flex align-items-center gap-2 text-danger">
+                <i class="bi bi-box-arrow-right"></i> Sair
+            </button>
+        </form>
 
         {{-- Dados do usuário logado --}}
         <div class="sidebar-user">

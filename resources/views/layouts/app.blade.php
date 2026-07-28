@@ -38,13 +38,7 @@
                 <input type="text" placeholder="Search campaigns, posts...">
             </div>
 
-            <!-- SAUDAÇÃO -->
-            <div class="app-header-greeting">
-                
-                <p>@yield('greeting', 'Bom dia, ' . explode(' ', auth()->user()->name)[0] . '.') @yield('greeting-sub', 'Aqui está o resumo do seu dia.')</p>
-            </div>
-
-<!-- NOTIFICAÇÕES -->
+            <!-- NOTIFICAÇÕES -->
             <div class="header-actions">
                 <button class="btn-icon" id="notifBtn" title="Notifications">
                     <i class="bi bi-bell"></i>
@@ -69,9 +63,9 @@
         <!-- CONTENT -->
         <div class="content">
 
-         @yield('content')
+            @yield('content')
 
-            
+
 
         </div> <!-- CONTENT -->
     </div>
