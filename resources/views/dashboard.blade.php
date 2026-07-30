@@ -637,7 +637,7 @@
                         </div>
 
                         <div class="table-responsive">
-                            <table class="table table-posts align-middle" id="postsTable">
+                            <table class="table table-jc align-middle" id="postsTable">
                                 <thead>
                                     <tr>
                                         <th>Post</th>
@@ -647,7 +647,7 @@
                                         <th>CPL</th>
                                         <th>Budget</th>
                                         <th>Manager</th>
-                                        <th></th>
+                                        <th>Ação</th>
                                     </tr>
                                 </thead>
                                 <tbody id="postsBody">

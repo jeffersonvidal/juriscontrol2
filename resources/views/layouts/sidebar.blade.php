@@ -56,7 +56,7 @@
             <span class="sidebar-item-text">Clientes</span>
         </a>
 
-        {{-- Dashboard --}}
+        {{-- Processos --}}
         <div>
             <a href="#" title="Gestão de Processos" class="sidebar-item" data-submenu="audience-sub">
                 <span class="sidebar-item-icon"><i class="bi bi-briefcase"></i></span>
@@ -147,8 +147,11 @@
                 <i class="bi bi-chevron-down sidebar-item-arrow"></i>
             </a>
             <div class="sidebar-submenu" id="office-config-sub">
-                <a href="#" title="Faturas" class="sidebar-item"><span class="sidebar-item-icon"></span><span
-                        class="sidebar-item-text">Tags</span></a>
+                @can('tags.view')
+                    <a href="{{ route('tags.index') }}" title="Faturas"
+                        class="sidebar-item {{ request()->routeIs('tags.*') ? 'active' : '' }}"><span
+                            class="sidebar-item-icon"></span><span class="sidebar-item-text">Tags</span></a>
+                @endcan
                 <a href="#" title="Pagamentos" class="sidebar-item"><span class="sidebar-item-icon"></span><span
                         class="sidebar-item-text">Categ. Tarefas</span></a>
                 <a href="#" title="Fornecedores" class="sidebar-item"><span class="sidebar-item-icon"></span><span

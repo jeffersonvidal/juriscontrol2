@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\Tag;
+use App\Modules\Tags\Policies\TagPolicy;
 use Illuminate\Support\ServiceProvider;
 
 use App\Modules\Clients\Policies\ClientPolicy;
@@ -25,6 +27,7 @@ class AppServiceProvider extends ServiceProvider
     {
         // Registra policies (adicionar novas conforme módulos forem criados)
         Gate::policy(\App\Models\Client::class, ClientPolicy::class);
+        Gate::policy(Tag::class, TagPolicy::class);
 
         // Gate global: super-admin bypass (acesso total)
         Gate::before(function ($user, $ability) {

@@ -220,6 +220,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.18.1/axios.min.js"></script>
     <script>
         // SIDEBAR TOGGLE - Desktop: starts expanded, toggle adds/removes 'collapsed'
         const sidebar = document.getElementById('sidebar');
@@ -580,7 +581,33 @@
         });
     </script>
     <div class="sidebar-backdrop"></div>
-    <script>document.addEventListener("DOMContentLoaded", () => { const fab = document.getElementById("fab-toggle") || document.querySelector(".fab"); const sidebar = document.querySelector(".sidebar"); const bd = document.querySelector(".sidebar-backdrop"); if (!fab || !sidebar || !bd) return; const open = () => { sidebar.classList.add("show"); bd.classList.add("show") }; const close = () => { sidebar.classList.remove("show"); bd.classList.remove("show") }; fab.addEventListener("click", e => { if (window.innerWidth <= 991.98) { e.stopPropagation(); open(); } }); bd.addEventListener("click", close); document.addEventListener("click", e => { if (window.innerWidth <= 991.98 && sidebar.classList.contains("show") && !sidebar.contains(e.target) && !fab.contains(e.target)) close(); }); });</script>
+    <script>
+        /**FAB - Floating Action Button (exibir sidebar no mobile) */
+        document.addEventListener("DOMContentLoaded", () => {
+            const fab = document.getElementById("fab-toggle") || document.querySelector(".fab");
+            const sidebar = document.querySelector(".sidebar");
+            const bd = document.querySelector(".sidebar-backdrop");
+            if (!fab || !sidebar || !bd) return; const open = () => {
+                sidebar.classList.add("show");
+                bd.classList.add("show")
+            };
+            const close = () => {
+                sidebar.classList.remove("show");
+                bd.classList.remove("show")
+            };
+            fab.addEventListener("click", e => {
+                if (window.innerWidth <= 991.98) {
+                    e.stopPropagation();
+                    open();
+                }
+            });
+            bd.addEventListener("click", close);
+            document.addEventListener("click", e => {
+                if (window.innerWidth <= 991.98 && sidebar.classList.contains("show") && !sidebar.contains(e.target) && !fab.contains(e.target))
+                    close();
+            });
+        });
+    </script>
     <style>
         .sidebar-backdrop {
             position: fixed;
@@ -601,6 +628,7 @@
             z-index: 1040
         }
     </style>
+    @stack('scripts')
 </body>
 
 </html>

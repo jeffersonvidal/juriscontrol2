@@ -30,10 +30,16 @@ class RolePermissionService
             Role::ADMIN->value => array_diff(
                 Permission::allValues(),
                 [
+                    // Empresas
                     Permission::COMPANIES_VIEW->value,
                     Permission::COMPANIES_CREATE->value,
                     Permission::COMPANIES_UPDATE->value,
                     Permission::COMPANIES_DELETE->value,
+                    // Tags
+                    Permission::TAGS_VIEW->value,
+                    Permission::TAGS_CREATE->value,
+                    Permission::TAGS_UPDATE->value,
+                    Permission::TAGS_DELETE->value,
                 ]
             ),
 

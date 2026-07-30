@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
             SuperAdminSeeder::class,
             CompanySeeder::class,
             AdminUserSeeder::class,
+            TagPermissionSeeder::class,
         ]);
     }
 }

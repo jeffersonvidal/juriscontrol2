@@ -32,16 +32,16 @@ class CheckUserStatus
         }
 
         // DEBUG: Log temporário para identificar o problema
-        \Log::debug('CheckUserStatus Debug', [
-            'user_id' => $user->id,
-            'company_id' => $user->company_id,
-            'company' => $user->company ? [
-                'id' => $user->company->id,
-                'trade_name' => $user->company->trade_name,
-                'is_active' => $user->company->is_active,
-                'is_active_type' => gettype($user->company->is_active),
-            ] : null,
-        ]);
+        // \Log::debug('CheckUserStatus Debug', [
+        //     'user_id' => $user->id,
+        //     'company_id' => $user->company_id,
+        //     'company' => $user->company ? [
+        //         'id' => $user->company->id,
+        //         'trade_name' => $user->company->trade_name,
+        //         'is_active' => $user->company->is_active,
+        //         'is_active_type' => gettype($user->company->is_active),
+        //     ] : null,
+        // ]);
 
         // CORREÇÃO: Verifica 'is_active' (boolean)
         if (! $user->company || ! $user->company->is_active) {

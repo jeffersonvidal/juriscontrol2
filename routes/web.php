@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthController;
+use App\Modules\Companies\Http\Controllers\CompanyController;
+use App\Modules\Tags\Http\Controllers\TagController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -33,12 +35,25 @@ Route::middleware(['auth', 'check.status', 'tenant'])->group(function () {
     // Módulo Companies
     // ============================================================
     Route::prefix('companies')->name('companies.')->group(function () {
-        Route::get('/', [\App\Modules\Companies\Http\Controllers\CompanyController::class, 'index'])->name('index');
-        Route::get('/list', [\App\Modules\Companies\Http\Controllers\CompanyController::class, 'getList'])->name('list');
-        Route::get('/{company}', [\App\Modules\Companies\Http\Controllers\CompanyController::class, 'show'])->name('show'); // <-- ADICIONADO
-        Route::post('/', [\App\Modules\Companies\Http\Controllers\CompanyController::class, 'store'])->name('store');
-        Route::get('/{company}/edit', [\App\Modules\Companies\Http\Controllers\CompanyController::class, 'edit'])->name('edit');
-        Route::put('/{company}', [\App\Modules\Companies\Http\Controllers\CompanyController::class, 'update'])->name('update');
-        Route::delete('/{company}', [\App\Modules\Companies\Http\Controllers\CompanyController::class, 'destroy'])->name('destroy');
+        Route::get('/', [CompanyController::class, 'index'])->name('index');
+        Route::get('/list', [CompanyController::class, 'getList'])->name('list');
+        Route::get('/{company}', [CompanyController::class, 'show'])->name('show'); // <-- ADICIONADO
+        Route::post('/', [CompanyController::class, 'store'])->name('store');
+        Route::get('/{company}/edit', [CompanyController::class, 'edit'])->name('edit');
+        Route::put('/{company}', [CompanyController::class, 'update'])->name('update');
+        Route::delete('/{company}', [CompanyController::class, 'destroy'])->name('destroy');
     });
+
+
+    // ============================================================
+    // Módulo Tags
+    // ============================================================
+    Route::middleware(['auth', 'tenant'])->prefix('tags')->name('tags.')->group(function () {
+        Route::get('/', [TagController::class, 'index'])->name('index');
+        Route::post('/', [TagController::class, 'store'])->name('store');
+        Route::get('/{tag}/edit', [TagController::class, 'edit'])->name('edit');
+        Route::put('/{tag}', [TagController::class, 'update'])->name('update');
+        Route::delete('/{tag}', [TagController::class, 'destroy'])->name('destroy');
+    });
+
 });

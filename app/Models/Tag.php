@@ -2,21 +2,16 @@
 
 namespace App\Models;
 
+use App\Modules\Core\Traits\HasCompany; // Trait padrão do seu Core para Multi-tenancy
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Str;
-use Spatie\Activitylog\Traits\LogsActivity;
-use Spatie\Activitylog\LogOptions;
 
 class Tag extends Model
 {
-    use HasFactory, SoftDeletes, LogsActivity;
+    use HasFactory, SoftDeletes, HasCompany;
 
-    /**
-     * Campos que podem ser preenchidos em massa
-     */
     protected $fillable = [
         'company_id',
         'name',
@@ -26,14 +21,8 @@ class Tag extends Model
         'is_active',
     ];
 
-    /**
-     * Campos que devem ser castados
-     */
     protected $casts = [
         'is_active' => 'boolean',
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
-        'deleted_at' => 'datetime',
     ];
 
     /**
@@ -60,14 +49,22 @@ class Tag extends Model
         return $this->belongsTo(Company::class);
     }
 
-    /**
-     * Configuração de Activity Log
-     */
-    public function getActivitylogOptions(): LogOptions
-    {
-        return LogOptions::defaults()
-            ->logOnly(['name', 'color', 'bg_color', 'is_active'])
-            ->logOnlyDirty()
-            ->dontSubmitEmptyLogs();
-    }
+    // Relação polimórfica inversa (opcional, para saber onde a tag é usada)
+    // public function tasks()
+    // {
+    //     return $this->morphedByMany(Task::class, 'taggable');
+    // }
+
+    // public function cases()
+    // {
+    //     return $this->morphedByMany(Case::class, 'taggable');
+    // }
 }
+
+
+
+
+
+    
+
+    
