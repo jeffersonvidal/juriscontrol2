@@ -15,7 +15,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'JurisControl') — ERP Jurídico</title>
+    <link rel="icon" type="image/svg+xml" href="{{ asset('LogoJurisControl.svg') }}">
+    <title>@yield('title', 'Dashboard') — JurisControl</title>
 
     {{-- ============================================================
         DARK/LIGHT MODE: aplica o tema ANTES do render (sem piscar)
