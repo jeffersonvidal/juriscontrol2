@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('bg_color', 7); // Cor de fundo clareada (Ex: #E8F0FE)
             $table->boolean('is_active')->default(true);
             $table->timestamps();
-            $table->softDeletes(); // Soft deletes conforme playbook
+            //$table->softDeletes(); // Soft deletes conforme playbook
 
             // Índices compostos para performance
             $table->index(['company_id', 'name_slug']);
