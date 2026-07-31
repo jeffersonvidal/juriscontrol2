@@ -98,7 +98,7 @@ O sistema de gestão jurídico Juriscontrol foi criado para fazer a gestão comp
 
 - [] DataJud - [visitar](https://)
 - [] Google Drive - [visitar](https://)
-- [] Google Calendar - [visitar](https://)
+- [] Google Calendar + FullCalendar - [visitar](https://)
 - [] Via CEP - [visitar](https://viacep.com.br/)
 - [] PagSeguro - [visitar](https://)
 - [] Mercado Pago - [visitar](https://)

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\AuthController;
 use App\Modules\Companies\Http\Controllers\CompanyController;
+use App\Modules\Core\Http\Controllers\CepController;
 use App\Modules\Tags\Http\Controllers\TagController;
 use Illuminate\Support\Facades\Route;
 
@@ -55,5 +56,12 @@ Route::middleware(['auth', 'check.status', 'tenant'])->group(function () {
         Route::put('/{tag}', [TagController::class, 'update'])->name('update');
         Route::delete('/{tag}', [TagController::class, 'destroy'])->name('destroy');
     });
+
+    
+    // ============================================================
+    // Rota para consulta de CEP via AJAX
+    // ============================================================
+    Route::post('/cep/buscar', [CepController::class, 'buscar'])
+        ->name('cep.buscar');
 
 });
