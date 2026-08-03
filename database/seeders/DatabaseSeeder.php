@@ -24,6 +24,8 @@ class DatabaseSeeder extends Seeder
             CompanySeeder::class,
             AdminUserSeeder::class,
             TagPermissionSeeder::class,
+            SystemOptionSeeder::class,
+            SystemOptionPermissionSeeder::class,
         ]);
     }
 }

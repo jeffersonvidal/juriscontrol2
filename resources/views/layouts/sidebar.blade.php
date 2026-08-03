@@ -148,9 +148,14 @@
             </a>
             <div class="sidebar-submenu" id="office-config-sub">
                 @can('tags.view')
-                    <a href="{{ route('tags.index') }}" title="Faturas"
+                    <a href="{{ route('tags.index') }}" title="Tags / Etiquetas"
                         class="sidebar-item {{ request()->routeIs('tags.*') ? 'active' : '' }}"><span
                             class="sidebar-item-icon"></span><span class="sidebar-item-text">Tags</span></a>
+                @endcan
+                @can('tags.view')
+                    <a href="{{ route('system-option.index') }}" title="Configurações do Escritório"
+                        class="sidebar-item {{ request()->routeIs('system-options.*') ? 'active' : '' }}"><span
+                            class="sidebar-item-icon"></span><span class="sidebar-item-text">Config. do Escritório</span></a>
                 @endcan
                 <a href="#" title="Pagamentos" class="sidebar-item"><span class="sidebar-item-icon"></span><span
                         class="sidebar-item-text">Categ. Tarefas</span></a>

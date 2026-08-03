@@ -220,7 +220,12 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.18.1/axios.min.js"></script>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Axios -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script></script>
     <script>
         // SIDEBAR TOGGLE - Desktop: starts expanded, toggle adds/removes 'collapsed'
         const sidebar = document.getElementById('sidebar');
@@ -628,7 +633,7 @@
             z-index: 1040
         }
     </style>
+
     @stack('scripts')
 </body>
-
 </html>

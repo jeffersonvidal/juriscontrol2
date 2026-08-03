@@ -25,13 +25,15 @@ return [
     */
 
     'user' => [
-        'morph_prefix' => 'user',
+        'primary_key' => 'id',
+        'foreign_key' => 'user_id',
+        'model' => App\Models\User::class,
+        // OBRIGATÓRIO: Deve ser esta string exata. Não use null, não use ''.
+        'resolver' => OwenIt\Auditing\Resolvers\UserResolver::class,
         'guards' => [
             'web',
             'api',
         ],
-        'authentication' => true,
-        'resolver' => OwenIt\Auditing\Resolvers\UserResolver::class,
     ],
 
     /*
@@ -46,23 +48,6 @@ return [
         'ip_address' => OwenIt\Auditing\Resolvers\IpAddressResolver::class,
         'user_agent' => OwenIt\Auditing\Resolvers\UserAgentResolver::class,
         'url' => OwenIt\Auditing\Resolvers\UrlResolver::class,
-
-        // Resolver padrão de usuário (já existe)
-        OwenIt\Auditing\Resolvers\UserResolver::class,
-        OwenIt\Auditing\Resolvers\UrlResolver::class => [
-            'exclude' => ['password', 'remember_token'],
-        ],
-        OwenIt\Auditing\Resolvers\IpAddressResolver::class,
-        OwenIt\Auditing\Resolvers\UserAgentResolver::class,
-        OwenIt\Auditing\Resolvers\ConsoleResolver::class,
-
-        // ⭐ NOSSO RESOLVER CUSTOMIZADO (tenant)
-        \App\Modules\Audit\Resolvers\TenantResolver::class,
-    ],
-
-    // Mapeia o resolver para a coluna no banco
-    'resolver_format' => [
-        \App\Modules\Audit\Resolvers\TenantResolver::class => 'company_id',
     ],
 
     /*
@@ -160,11 +145,6 @@ return [
 
     'threshold' => 0,
 
-    'container' => [
-        'single' => OwenIt\Auditing\Auditor::class,
-        'tags' => [],
-    ],
-
     /*
     |--------------------------------------------------------------------------
     | Audit Driver
@@ -185,16 +165,10 @@ return [
     |
     */
 
-    // 'drivers' => [
-    //     'database' => [
-    //         'table' => 'audits',
-    //         'connection' => null,
-    //     ],
-    // ],
     'drivers' => [
         'database' => [
-            'type' => 'database',
-            'connection' => env('AUDIT_DB_CONNECTION', null),
+            'table' => 'audits',
+            'connection' => null,
         ],
     ],
 
@@ -224,13 +198,4 @@ return [
     */
 
     'console' => false,
-
-    'audit' => [
-        'strict'       => false,
-        'timestamps'   => true,
-        'threshold'    => 50,   // Mantém últimos 50 audits por model (evita crescimento infinito)
-        'delete'       => true, // Deleta audits antigos quando excede threshold
-        'pagination'   => 15,
-        'console'      => false,
-    ],
 ];

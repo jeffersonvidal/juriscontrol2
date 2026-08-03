@@ -36,5 +36,10 @@ class AppServiceProvider extends ServiceProvider
             }
             return null; // segue para a policy normal
         });
+
+        // FORÇA o resolver correto em tempo de execução, ignorando qualquer 
+        // configuração quebrada, em cache ou no arquivo .env
+        config(['audit.user.resolver' => \OwenIt\Auditing\Resolvers\UserResolver::class]);
+
     }
 }

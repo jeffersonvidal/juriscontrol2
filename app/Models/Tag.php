@@ -2,15 +2,18 @@
 
 namespace App\Models;
 
-use App\Modules\Core\Traits\HasCompany; // Trait padrão do seu Core para Multi-tenancy
+use App\Modules\Core\Traits\HasCompany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
+use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
+use OwenIt\Auditing\Auditable;
 
-class Tag extends Model
+class Tag extends Model implements AuditableContract
 {
-    use HasFactory, SoftDeletes, HasCompany;
+    use HasFactory, SoftDeletes, HasCompany, Auditable;
 
     protected $fillable = [
         'company_id',
@@ -25,46 +28,39 @@ class Tag extends Model
         'is_active' => 'boolean',
     ];
 
-    /**
-     * Boot do model para eventos
-     * Gera slug automaticamente antes de salvar
-     */
     protected static function boot()
     {
         parent::boot();
 
-        // Gera slug automaticamente ao salvar
         static::saving(function ($tag) {
-            if (empty($tag->name_slug)) {
+            if (!empty($tag->name)) {
                 $tag->name_slug = Str::slug($tag->name);
             }
         });
     }
 
-    /**
-     * Relacionamento com Company (tenant)
-     */
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
     }
 
-    // Relação polimórfica inversa (opcional, para saber onde a tag é usada)
-    // public function tasks()
-    // {
-    //     return $this->morphedByMany(Task::class, 'taggable');
-    // }
+    protected $auditInclude = [
+        'name',
+        'color',
+        'bg_color',
+        'is_active',
+    ];
 
-    // public function cases()
-    // {
-    //     return $this->morphedByMany(Case::class, 'taggable');
-    // }
+    protected $auditExclude = [
+        'name_slug',
+    ];
+
+        /**
+     * Injeta o company_id na auditoria via método nativo do pacote.
+     */
+       public function transformAudit(array $data): array
+    {
+        $data['company_id'] = auth()->user()?->company_id ?? $this->company_id;
+        return $data;
+    }
 }
-
-
-
-
-
-    
-
-    
