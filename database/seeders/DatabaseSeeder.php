@@ -25,7 +25,8 @@ class DatabaseSeeder extends Seeder
             AdminUserSeeder::class,
             TagPermissionSeeder::class,
             SystemOptionSeeder::class,
-            SystemOptionPermissionSeeder::class,
+            SystemOptionsPermissionsSeeder::class,
+            DriveSettingsPermissionSeeder::class,
         ]);
     }
 }

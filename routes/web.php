@@ -3,7 +3,7 @@
 use App\Http\Controllers\Auth\AuthController;
 use App\Modules\Companies\Http\Controllers\CompanyController;
 use App\Modules\Core\Http\Controllers\CepController;
-use App\Modules\SystemOption\Http\Controllers\SystemOptionController;
+use App\Modules\SystemOptions\Http\Controllers\SystemOptionController;
 use App\Modules\Tags\Http\Controllers\TagController;
 use Illuminate\Support\Facades\Route;
 
@@ -69,13 +69,33 @@ Route::middleware(['auth', 'check.status', 'tenant'])->group(function () {
     // ============================================================
     // Rotas do Módulo System Option
     // ============================================================
-    Route::middleware(['auth', 'tenant'])->prefix('system-options')->name('system-option.')->group(function () {
-        Route::get('/', [SystemOptionController::class, 'index'])->name('index');
-        Route::get('/data', [SystemOptionController::class, 'getData'])->name('data');
-        Route::post('/', [SystemOptionController::class, 'store'])->name('store');
-        Route::get('/{system_option}/edit', [SystemOptionController::class, 'edit'])->name('edit');
-        Route::put('/{system_option}', [SystemOptionController::class, 'update'])->name('update');
-        Route::delete('/{system_option}', [SystemOptionController::class, 'destroy'])->name('destroy');
+    Route::middleware(['auth', 'tenant'])->group(function () {
+
+        // 1. ROTAS ESPECÍFICAS DEVEM VIR PRIMEIRO
+        Route::get('system-options/data', [SystemOptionController::class, 'data'])
+            ->name('system-options.data');
+
+        // 2. ROTAS RESOURCE VEM POR ÚLTIMO
+        Route::resource('system-options', SystemOptionController::class)
+            ->names('system-options');
+
+    });
+
+    // ===========================================================================
+    // Rotas do módulo DriveSettings
+    // ===========================================================================
+    Route::prefix('drive-settings')->middleware(['auth', 'tenant'])->group(function () {
+        Route::get('/', [App\Modules\DriveSettings\Http\Controllers\DriveSettingsController::class, 'index'])
+            ->name('drive_settings.index');
+
+        Route::post('/', [App\Modules\DriveSettings\Http\Controllers\DriveSettingsController::class, 'store'])
+            ->name('drive_settings.store');
+
+        Route::post('/test-connection', [App\Modules\DriveSettings\Http\Controllers\DriveSettingsController::class, 'testConnection'])
+            ->name('drive_settings.test_connection');
+
+        Route::delete('/{option}', [App\Modules\DriveSettings\Http\Controllers\DriveSettingsController::class, 'destroy'])
+            ->name('drive_settings.destroy');
     });
 
     // ===========================================================================

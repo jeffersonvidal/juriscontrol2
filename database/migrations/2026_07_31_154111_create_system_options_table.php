@@ -10,21 +10,20 @@ return new class extends Migration
     {
         Schema::create('system_options', function (Blueprint $table) {
             $table->id();
-            // company_id nullable permite opções globais (padrão do sistema) e específicas da empresa
+            // Nullable para permitir configurações globais (company_id = null)
             $table->foreignId('company_id')->nullable()->constrained('companies')->cascadeOnDelete();
-            $table->string('option_name')->comment('Nome identificador da opção');
-            $table->text('option_value')->nullable()->comment('Valor armazenado da opção');
-            $table->text('option_description')->nullable()->comment('Descrição da opção para documentação UI');
-            $table->boolean('option_status')->default(true)->comment('Status da opção (ativo/inativo)');
-            $table->timestamps();
-            $table->softDeletes();
-
-            // Índice único composto: uma empresa não pode ter duas opções com o mesmo nome
-            // Permite que company_id NULL (global) e company_id X (específico) coexistam para o mesmo option_name
-            $table->unique(['company_id', 'option_name']);
             
-            // Índices compostos para performance em filtros
-            $table->index(['company_id', 'option_status']);
+            $table->string('option_name')->comment('Chave da configuração (ex: MAIL_MAILER)');
+            $table->text('option_value')->nullable()->comment('Valor da configuração');
+            $table->text('option_description')->nullable()->comment('Descrição do que a configuração faz');
+            $table->boolean('option_status')->default(1)->comment('1=Ativo/Editável, 0=Inativo/Bloqueado');
+            
+            $table->softDeletes();
+            $table->timestamps();
+
+            // Índice composto para performance e unicidade por empresa
+            $table->index(['company_id', 'option_name']);
+            $table->unique(['company_id', 'option_name'], 'unique_company_option');
         });
     }
 

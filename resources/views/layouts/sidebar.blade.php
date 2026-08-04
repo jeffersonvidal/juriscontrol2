@@ -153,9 +153,14 @@
                             class="sidebar-item-icon"></span><span class="sidebar-item-text">Tags</span></a>
                 @endcan
                 @can('tags.view')
-                    <a href="{{ route('system-option.index') }}" title="Configurações do Escritório"
+                    <a href="{{ route('system-options.index') }}" title="Configurações do Escritório"
                         class="sidebar-item {{ request()->routeIs('system-options.*') ? 'active' : '' }}"><span
                             class="sidebar-item-icon"></span><span class="sidebar-item-text">Config. do Escritório</span></a>
+                @endcan
+                @can('drive_settings.view')
+                    <a href="{{ route('drive_settings.index') }}" title="Google Drive"
+                        class="sidebar-item {{ request()->routeIs('drive_settings.*') ? 'active' : '' }}"><span
+                            class="sidebar-item-icon"></span><span class="sidebar-item-text">Google Drive</span></a>
                 @endcan
                 <a href="#" title="Pagamentos" class="sidebar-item"><span class="sidebar-item-icon"></span><span
                         class="sidebar-item-text">Categ. Tarefas</span></a>
